@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon",
+    "build": "webpack --config webpack.config.client.production.js && webpack --mode=production --config webpack.config.server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eoanodea/mern-music-emotions.git"
   },
   "author": "Eoan O'Dea",
   "license": "MIT",
@@ -23,6 +28,7 @@
     "react-router-dom": "^5.1.2"
   },
   "devDependencies": {
+    "nodemon": "^2.0.3",
     "webpack": "4.42.1",
     "webpack-dev-middleware": "^3.7.2",
     "webpack-hot-middleware": "^2.25.0"
