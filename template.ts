@@ -11,7 +11,7 @@ export default (html: String, css: String) => {
               }
           </style>
         </head>
-        <body style="margin:0;background-color:#000000e6">
+        <body style="margin:0;">
           <div id="root" style="overflow: hidden;">${html}</div>
           <style id="jss-server-side">${css}</style>
           <script type="text/javascript" src="/dist/bundle.js"></script>

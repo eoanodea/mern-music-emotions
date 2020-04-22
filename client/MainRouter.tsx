@@ -1,14 +1,28 @@
 import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 
+/**
+ * Components
+ */
+
+import Loading from "./components/global/Loading";
+import Error from "./components/global/Error";
+import Header  from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
+
+/**
+ * Pages
+ */
+import Home from "./pages/Home";
+
 type IProps = {
-  data?: object
-}
+  data?: object;
+};
 
 type IState = {
-  ssrComplete: boolean,
-  online: boolean
-}
+  ssrComplete: boolean;
+  online: boolean;
+};
 
 class MainRouter extends Component<IProps, IState> {
   constructor(props: IProps) {
@@ -17,12 +31,8 @@ class MainRouter extends Component<IProps, IState> {
       ssrComplete: false,
       online: false,
     };
-    if(props.data) {
-      console.log(typeof props.data)
-      
-    }
   }
-  
+
   /**
    * Removes the server-side injected CSS when React component mounts
    */
@@ -36,14 +46,20 @@ class MainRouter extends Component<IProps, IState> {
 
   render() {
     const { ssrComplete, online } = this.state;
-    
-    if (!ssrComplete) return <h2>Loading...</h2>;
+
+    if (!ssrComplete) return <Loading />;
+    if (!online) return <Error message="Not connected to server" />;
 
     return (
-      <h2>{online ? "Hello react typescript" : "offline"}</h2>
-      // <Switch>
-      //   <Route exact path="/" component={Signin} />
-      // </Switch>
+      <React.Fragment>
+        <Header />
+
+        <Switch>
+          <Route exact path="/" component={Home} />
+        </Switch>
+
+        <Footer />
+      </React.Fragment>
     );
   }
 }
