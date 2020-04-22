@@ -1,7 +1,7 @@
 /**
  * Import primary dependencies
  */
-import express from "express";
+import express, { Application, Request, Response } from "express";
 import path from "path";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
@@ -38,7 +38,7 @@ import {
 } from "@material-ui/core/styles";
 
 const CURRENT_WORKING_DIR = process.cwd();
-const app = express();
+const app: Application = express();
 
 /**
  * Compile Development Bundle
@@ -102,7 +102,7 @@ app.use("/dist", express.static(path.join(CURRENT_WORKING_DIR, "dist")));
  * @param {Request} req 
  * @param {Response} res 
  */
-function handleRender(req: Request, res: any): void {
+function handleRender(req: Request, res: Response): void {
   const sheets = new ServerStyleSheets();
   let context = {
     url: ''
@@ -124,7 +124,7 @@ function handleRender(req: Request, res: any): void {
       }
       const css = sheets.toString();
 
-      res.status('200').send(Template(html, css));
+      res.status(200).send(Template(html, css));
     })
     .catch(err => {
       res.redirect("/");
@@ -138,7 +138,7 @@ app.use(handleRender);
 /**
  * Catch Unauthorized Errors
  */
-// app.use((err: any, req: Request, res: any }) => {
+// app.use({err: any, req: Request, res: Response }) => {
 //   if (err.name === "UnauthorizedError") {
 //     res.status(401).json({ error: err.name + ": " + err.message });
 //   }
