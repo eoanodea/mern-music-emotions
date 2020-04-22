@@ -1,4 +1,4 @@
-export default (html, css) => {
+export default (html: String, css: String) => {
     return `<!doctype html>
       <html lang="en" style="scroll-behavior: smooth;">
         <head>

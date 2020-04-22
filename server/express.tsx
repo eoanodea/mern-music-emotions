@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
-import Template from "./../template";
+import Template from "../template";
 
 /**
  * Import Routes
@@ -19,7 +19,7 @@ import Template from "./../template";
  * Config environment variables
  */
 
-import config from "./../config/config";
+import config from "../config/config";
 
 /**
  * Modules for server side rendering
@@ -27,8 +27,8 @@ import config from "./../config/config";
 
 import React from "react";
 import ReactDOMServer from "react-dom/server";
-import MainRouter from "./../client/MainRouter";
-import theme from "./../client/assets/js/theme"
+import MainRouter from "../client/MainRouter";
+import theme from "../client/assets/js/theme"
 
 const StaticRouter = require("react-router-dom").StaticRouter;
 
@@ -37,25 +37,26 @@ import {
   ServerStyleSheets,
 } from "@material-ui/core/styles";
 
+const CURRENT_WORKING_DIR = process.cwd();
+const app = express();
+
 /**
  * Compile Development Bundle
  */
+import devBundle from './devBundle'
+
 if(config.env === "development") {
-    import devBundle from './devBundle'
     devBundle.compile(app)
 }
-
-const CURRENT_WORKING_DIR = process.cwd();
-const app = express();
 
 /**
  * Server Side Rending with Data
  */
 import { matchRoutes } from "react-router-config";
-import routes from "./../client/routeConfig";
+import routes from "../client/routeConfig";
 
 
-const loadBranchData = location => {
+const loadBranchData = (location: string) => {
   const branch = matchRoutes(routes, location);
   const promises = branch.map(({ route, match }) => {
     return route.loadData
@@ -89,11 +90,11 @@ app.use("/dist", express.static(path.join(CURRENT_WORKING_DIR, "dist")));
  * 
  * @param {App} app 
  */
-function mountRoutes(app) {
+// function mountRoutes(app) {
 
-}
+// }
 
-mountRoutes(app)
+// mountRoutes(app)
 
 /**
  * Handle Server Side Render
@@ -101,9 +102,11 @@ mountRoutes(app)
  * @param {Request} req 
  * @param {Response} res 
  */
-function handleRender(req, res) {
+function handleRender(req: Request, res: any): void {
   const sheets = new ServerStyleSheets();
-  const context = {};
+  let context = {
+    url: ''
+  };
 
   loadBranchData(req.url)
     .then(data => {
@@ -121,7 +124,7 @@ function handleRender(req, res) {
       }
       const css = sheets.toString();
 
-      res.status(200).send(Template(html, css));
+      res.status('200').send(Template(html, css));
     })
     .catch(err => {
       res.redirect("/");
@@ -132,11 +135,13 @@ function handleRender(req, res) {
 
 app.use(handleRender);
 
-// Catch unauthorised errors
-app.use((err, req, res, next) => {
-  if (err.name === "UnauthorizedError") {
-    res.status(401).json({ error: err.name + ": " + err.message });
-  }
-});
+/**
+ * Catch Unauthorized Errors
+ */
+// app.use((err: any, req: Request, res: any }) => {
+//   if (err.name === "UnauthorizedError") {
+//     res.status(401).json({ error: err.name + ": " + err.message });
+//   }
+// });
 
 export default app;

@@ -1,13 +1,14 @@
-const path = require('path')
+
+const path = require('path');
 const webpack = require('webpack')
 const nodeExternals = require('webpack-node-externals')
 const CURRENT_WORKING_DIR = process.cwd()
-const isDevelopment = process.env.NODE_ENV === "development"
 
-const config = {
+module.exports = {
     name: "server",
-    entry: [ path.join(CURRENT_WORKING_DIR , './server/server.js') ],
+    entry: [ path.join(CURRENT_WORKING_DIR , './server/server.ts') ],
     target: "node",
+    devtool: 'eval-source-map',
     output: {
         path: path.join(CURRENT_WORKING_DIR , '/dist/'),
         filename: "server.generated.js",
@@ -17,23 +18,20 @@ const config = {
     externals: [nodeExternals()],
     module: {
         rules: [
-            // {
-            //     test: /\.js$/,
-            //     exclude: /node_modules/,
-            //     use: [ 'babel-loader' ]
-            // },
-
+            {
+                test: /\.tsx|.ts?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
             {
                 test: /\.(ttf|eot|svg|gif|jpg|png)(\?[\s\S]+)?$/,
                 use: 'file-loader'
             },
-            // {
-            //     test: /\.css$/,
-            //     use: ["style-loader", "css-loader"]
-            // }
         ],
-    
-    }
+    },
+    resolve: {
+        extensions: [ '.tsx', '.ts', '.js' ],
+    },
 }
 
-module.exports = config
+// module.exports = config
