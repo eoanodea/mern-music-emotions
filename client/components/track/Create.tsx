@@ -26,7 +26,8 @@ import {
   Theme,
   Typography,
   Icon,
-  CardActions
+  CardActions,
+  CircularProgress
 } from "@material-ui/core";
 import { Audiotrack } from "@material-ui/icons";
 
@@ -155,7 +156,13 @@ class Create extends Component<IProps, IState> {
         )}
         </CardContent>
         <CardActions>
-            <Button variant="contained" color="primary" onClick={this.submit} disabled={loading}>Save</Button>
+            <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={this.submit} 
+                disabled={loading || track.title === "" || track.data.name === ""}
+                endIcon={loading && <CircularProgress size={18} color="secondary" />}
+            >Save</Button>
         </CardActions>
 
       </Card>
