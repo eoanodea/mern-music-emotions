@@ -22,4 +22,10 @@ router.route(`${prefix}/:id`)
     .put(trackCtrl.update)
     .delete(trackCtrl.remove)
 
+/**
+ * @method GET - Track Audio By ID
+ */
+router.route(`${prefix}/audio/:id`)
+    .get(trackCtrl.audio)
+
 export default router

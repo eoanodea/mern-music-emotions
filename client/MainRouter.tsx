@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, RouteComponentProps } from "react-router-dom";
 
 /**
  * Components
@@ -16,6 +16,13 @@ import Footer from "./components/layout/Footer";
 import Home from "./pages/Home";
 import ListTracks from "./components/track/List"
 import CreateTrack from "./components/track/Create"
+import ShowTrack from "./components/track/Show"
+
+interface MatchParams {
+  id: string
+}
+
+interface MatchProps extends RouteComponentProps<MatchParams> {}
 
 type IProps = {
   data?: object;
@@ -60,6 +67,10 @@ class MainRouter extends Component<IProps, IState> {
           <Route exact path="/" component={Home} />
           <Route path="/tracks" component={ListTracks} />
           <Route path="/track/new" component={CreateTrack} />
+          <Route path="/track/:id" render={( {match}: MatchProps) => (
+            <ShowTrack id={match.params.id} />
+          )} />
+        
 
         </Switch>
 

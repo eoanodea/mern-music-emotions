@@ -17,9 +17,10 @@ import { list } from "./api-track";
 import Error from "../global/Error";
 import Loading from "../global/Loading";
 import { Link } from "react-router-dom";
-import { Button } from "@material-ui/core";
+import { Button, Card, CardActions, Typography, CardActionArea } from "@material-ui/core";
 
 type ITrack = {
+    _id: string
     title: string,
     data: Buffer
 }
@@ -69,10 +70,14 @@ class List extends Component<IState> {
         <br />
         {tracks.map((dat, i) => {
             return (
-                <React.Fragment key={i}>
-                    <h2>{dat.title}</h2>
+                <Card key={i}>
+                    <Link to={`/track/${dat._id}`}>
+                    <CardActionArea>
+                        <Typography variant="h5">{dat.title}</Typography>
+                    </CardActionArea>
 
-                </React.Fragment>
+                    </Link>
+                </Card>
             )
         })}
       </div>
