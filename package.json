@@ -5,8 +5,17 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "build": "webpack --config webpack.config.client.production.js && webpack --mode=production --config webpack.config.server.ts"
+    "build": "webpack --config webpack.config.client.production.js && webpack --mode=production --config webpack.config.server.js"
   },
+  "keywords": [
+    "react",
+    "express",
+    "mongodb",
+    "node",
+    "mern",
+    "typescript",
+    "MaterialUI"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/eoanodea/mern-music-emotions.git"
