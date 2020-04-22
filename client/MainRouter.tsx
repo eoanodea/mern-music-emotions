@@ -14,6 +14,8 @@ import Footer from "./components/layout/Footer";
  * Pages
  */
 import Home from "./pages/Home";
+import ListTracks from "./components/track/List"
+import CreateTrack from "./components/track/Create"
 
 type IProps = {
   data?: object;
@@ -56,6 +58,9 @@ class MainRouter extends Component<IProps, IState> {
 
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route path="/tracks" component={ListTracks} />
+          <Route path="/track/new" component={CreateTrack} />
+
         </Switch>
 
         <Footer />

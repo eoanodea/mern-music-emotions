@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
 import Track from '../models/track.model'
 import {handleSuccess, handleError} from '../helpers/responseHandler'
+import {parseForm} from '../helpers/formHandler'
+import * as _ from "lodash"
+import fs from "fs";
+
+
 
 /**
  * Create a track in the database
@@ -9,9 +14,12 @@ import {handleSuccess, handleError} from '../helpers/responseHandler'
  * @param res 
  */
 export const create = async (req: Request, res: Response) => {
-    try {
-        const {body} = req
-        const track = new Track(body)
+    try {        
+        const parsedForm = await parseForm(req)
+        let track = new Track(parsedForm.fields)
+        track.data.data = fs.readFileSync(parsedForm.files.data.path)
+        track.data.contentType = parsedForm.files.data.type
+        
         const response = await track.save()
 
         return res.status(200).json(handleSuccess(response))
@@ -19,6 +27,8 @@ export const create = async (req: Request, res: Response) => {
         return res.status(400).json(handleError(err))
     }
 }
+
+
 
 /**
  * Retreive all tracks from the database

@@ -13,7 +13,7 @@ import Template from "../template";
 /**
  * Import Routes
  */
-
+import trackRoutes from "./routes/track.routes"
 
 /**
  * Config environment variables
@@ -90,11 +90,11 @@ app.use("/dist", express.static(path.join(CURRENT_WORKING_DIR, "dist")));
  * 
  * @param {App} app 
  */
-// function mountRoutes(app) {
+function mountRoutes(app: Application) {
+  app.use("/", trackRoutes)
+}
 
-// }
-
-// mountRoutes(app)
+mountRoutes(app)
 
 /**
  * Handle Server Side Render

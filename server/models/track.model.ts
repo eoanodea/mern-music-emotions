@@ -2,6 +2,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface TrackInterface extends Document {
+  data: {
+    data: Buffer,
+    contentType: string
+  };
   title: string;
 }
 /**
