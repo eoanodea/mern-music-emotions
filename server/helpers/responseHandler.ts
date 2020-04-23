@@ -16,9 +16,13 @@ export const handleSuccess = (data: any) => {
  * 
  * @param error
  */
-export const handleError = (error: String) => {
+export const handleError = (error: any) => {
+    const errorString = typeof error !== 'string'
+    ? error.message
+    : error
+
     return {
         sucess: false,
-        data: error
+        error: errorString
     }
 }
