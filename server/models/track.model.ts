@@ -1,12 +1,12 @@
 
 import mongoose, { Schema, Document } from "mongoose";
 
-export interface TrackInterface extends Document {
+interface TrackInterface extends Document {
+  title: string;
   data: {
     data: Buffer,
     contentType: string
   };
-  title: string;
 }
 /**
  * Schema for an audio track

@@ -9,11 +9,12 @@ import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
 import Template from "../template";
+import mongoose from "mongoose";
 
 /**
  * Import Routes
  */
-import trackRoutes from "./routes/track.routes"
+import trackRoutes from "./routes/track.routes";
 
 /**
  * Config environment variables
@@ -28,14 +29,14 @@ import config from "../config/config";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import MainRouter from "../client/MainRouter";
-import theme from "../client/assets/js/theme"
+import theme from "../client/assets/js/theme";
 
 const StaticRouter = require("react-router-dom").StaticRouter;
 
-import {
-  MuiThemeProvider,
-  ServerStyleSheets,
-} from "@material-ui/core/styles";
+/**
+ * Material UI Theme & SSR
+ */
+import { MuiThemeProvider, ServerStyleSheets } from "@material-ui/core/styles";
 
 const CURRENT_WORKING_DIR = process.cwd();
 const app: Application = express();
@@ -43,10 +44,10 @@ const app: Application = express();
 /**
  * Compile Development Bundle
  */
-import devBundle from './devBundle'
+import devBundle from "./devBundle";
 
-if(config.env === "development") {
-    devBundle.compile(app)
+if (config.env === "development") {
+  devBundle.compile(app);
 }
 
 /**
@@ -55,7 +56,11 @@ if(config.env === "development") {
 import { matchRoutes } from "react-router-config";
 import routes from "../client/routeConfig";
 
-
+/**
+ * Load branch data
+ *
+ * @param location string
+ */
 const loadBranchData = (location: string) => {
   const branch = matchRoutes(routes, location);
   const promises = branch.map(({ route, match }) => {
@@ -87,29 +92,29 @@ app.use("/dist", express.static(path.join(CURRENT_WORKING_DIR, "dist")));
 
 /**
  * Mount Routes
- * 
- * @param {App} app 
+ *
+ * @param {App} app
  */
 function mountRoutes(app: Application) {
-  app.use("/", trackRoutes)
+  app.use("/", trackRoutes);
 }
 
-mountRoutes(app)
+mountRoutes(app);
 
 /**
  * Handle Server Side Render
- * 
- * @param {Request} req 
- * @param {Response} res 
+ *
+ * @param {Request} req
+ * @param {Response} res
  */
 function handleRender(req: Request, res: Response): void {
   const sheets = new ServerStyleSheets();
   let context = {
-    url: ''
+    url: "",
   };
 
   loadBranchData(req.url)
-    .then(data => {
+    .then((data) => {
       const html = ReactDOMServer.renderToString(
         sheets.collect(
           <StaticRouter location={req.url} context={context}>
@@ -126,10 +131,10 @@ function handleRender(req: Request, res: Response): void {
 
       res.status(200).send(Template(html, css));
     })
-    .catch(err => {
-      res.redirect("/");
+    .catch((err) => {
+      // res.redirect("/");
       console.log("Error: ", err);
-      // res.status(500).send({"error": "Could not load React view with data", "Error Message": err})
+      res.status(500).send({"error": "Could not load React view with data", "Error Message": err})
     });
 }
 
