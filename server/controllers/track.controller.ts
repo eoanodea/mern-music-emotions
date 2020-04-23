@@ -1,8 +1,21 @@
+/*
+ * File: track.controller.ts
+ * Project: mern-music-emotions
+ * Version: 1.0.0
+ * File Created: Wednesday, 22nd April 2020 6:24:54 pm
+ * Author: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * File Description: Controller for the Track Model
+ * Last Modified: Thursday, 23rd April 2020 5:13:57 pm
+ * Modified By: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * Copyright 2020 - WebSpace
+ */
+
 /**
  * Primary dependencies
  */
 import { Request, Response } from "express";
-import Track from "../models/track.model";
 import mongoose from "mongoose";
 import multer from "multer";
 
@@ -10,6 +23,11 @@ import multer from "multer";
  * NodeJS Dependency
  */
 import { Readable } from "stream";
+
+/**
+ * Model Schema
+ */
+import Track from "../models/track.model";
 
 /**
  * Helpers for sucess and error responses
@@ -128,7 +146,7 @@ export const update = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const track = await Track.findByIdAndUpdate(id, req.body).select("title");
-    
+
     /**
      * Define the GridFSBucket using the mongoose DB connection
      */
@@ -139,11 +157,11 @@ export const update = async (req: Request, res: Response) => {
     /**
      * Rename the track in GridFSBucket
      */
-    bucket.rename(track?._id, req.body.title, function(err) {
-      if(err) return res.status(400).json(handleError(err));
+    bucket.rename(track?._id, req.body.title, function (err) {
+      if (err) return res.status(400).json(handleError(err));
 
       return res.status(200).json(handleSuccess(track));
-    })
+    });
   } catch (err) {
     return res.status(400).json(handleError(err));
   }
@@ -158,8 +176,8 @@ export const update = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const ObjId = new mongoose.mongo.ObjectId(id)
-    const track = await Track.deleteOne({_id: id});
+    const ObjId = new mongoose.mongo.ObjectId(id);
+    const track = await Track.deleteOne({ _id: id });
 
     /**
      * Define the GridFSBucket using the mongoose DB connection
@@ -171,11 +189,11 @@ export const remove = async (req: Request, res: Response) => {
     /**
      * Rename the track in GridFSBucket
      */
-    bucket.delete(ObjId, function(err) {
-      if(err) return res.status(400).json(handleError(err));
+    bucket.delete(ObjId, function (err) {
+      if (err) return res.status(400).json(handleError(err));
 
       return res.status(200).json(handleSuccess(track));
-    })
+    });
   } catch (err) {
     return res.status(400).json(handleError(err));
   }
@@ -259,7 +277,7 @@ export const audio = (req: Request, res: Response) => {
         res.end();
       });
     })
-    
+
     .catch((err) => {
       return res.status(404).json(handleError("Track does not exist"));
     });

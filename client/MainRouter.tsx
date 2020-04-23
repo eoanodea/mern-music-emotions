@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Route, Switch, RouteComponentProps } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 /**
  * Components
@@ -19,16 +19,16 @@ import CreateTrack from "./components/track/Create"
 import ShowTrack from "./components/track/Show"
 import UpdateTrack from "./components/track/Update"
 
-interface MatchParams {
-  id: string;
-}
-
-interface MatchProps extends RouteComponentProps<MatchParams> {}
-
+/**
+ * Type checking for component Props
+ */
 type IProps = {
   data?: object;
 };
 
+/**
+ * Type checking for Component State
+ */
 type IState = {
   ssrComplete: boolean;
   online: boolean;
@@ -74,7 +74,6 @@ class MainRouter extends Component<IProps, IState> {
           <Route path="/track/edit/:id" render={(props) => (
             <UpdateTrack id={props.match.params.id} history={props.history} />
           )} />
-        
 
         </Switch>
 

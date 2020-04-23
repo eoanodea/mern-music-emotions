@@ -14,6 +14,7 @@ import Template from "../template";
  * Import Routes
  */
 import trackRoutes from "./routes/track.routes";
+import reactionRoutes from "./routes/reaction.routes";
 
 /**
  * Config environment variables
@@ -96,6 +97,7 @@ app.use("/dist", express.static(path.join(CURRENT_WORKING_DIR, "dist")));
  */
 function mountRoutes(app: Application) {
   app.use("/", trackRoutes);
+  app.use("/", reactionRoutes);
 }
 
 mountRoutes(app);

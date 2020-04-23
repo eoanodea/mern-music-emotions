@@ -1,3 +1,18 @@
+/*
+ * File: track.routes.ts
+ * Project: mern-music-emotions
+ * Version: 1.0.0
+ * File Created: Wednesday, 22nd April 2020 6:42:27 pm
+ * Author: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * File Description: Routes for the Track collection
+ * Last Modified: Thursday, 23rd April 2020 5:14:48 pm
+ * Modified By: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * Copyright 2020 - WebSpace
+ */
+
+
 import express from 'express'
 import * as trackCtrl from '../controllers/track.controller'
 
@@ -23,7 +38,7 @@ router.route(`${prefix}/:id`)
     .delete(trackCtrl.remove)
 
 /**
- * @method GET - Track Audio By ID
+ * @method GET - Stream Track Audio By ID
  */
 router.route(`${prefix}/audio/:id`)
     .get(trackCtrl.audio)
