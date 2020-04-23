@@ -87,7 +87,7 @@ export const update  = async (id: String, body: any) => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body
+            body: JSON.stringify(body)
         });
         return response.json();
     }

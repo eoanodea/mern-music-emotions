@@ -71,7 +71,7 @@ class List extends Component<IState> {
         {tracks.map((dat, i) => {
             return (
                 <Card key={i}>
-                    <Link to={`/track/${dat._id}`}>
+                    <Link to={`/track/show/${dat._id}`}>
                     <CardActionArea>
                         <Typography variant="h5">{dat.title}</Typography>
                     </CardActionArea>

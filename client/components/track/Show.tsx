@@ -23,10 +23,12 @@ import {
   CardActions,
   Typography,
   CardActionArea,
+  CardHeader,
+  CardContent,
 } from "@material-ui/core";
 
 type ITrack = {
-    _id: string;
+  _id: string;
   title: string;
 };
 
@@ -37,22 +39,21 @@ type IState = {
 };
 
 type IProps = {
-    id: string 
-}
+  id: string;
+};
 
-
-class Show extends Component<IProps,IState> {
-    constructor(props: Readonly<IProps>) {
-        super(props);
-        this.state = {
-            track: {
-                _id: "",
-                title: ""
-            },
-            loading: true,
-            error: "",
-          };
-    }
+class Show extends Component<IProps, IState> {
+  constructor(props: Readonly<IProps>) {
+    super(props);
+    this.state = {
+      track: {
+        _id: "",
+        title: "",
+      },
+      loading: true,
+      error: "",
+    };
+  }
 
   componentDidMount() {
     this.init();
@@ -76,19 +77,30 @@ class Show extends Component<IProps,IState> {
     if (error !== "") return <Error message={error} />;
 
     return (
-      <div>
-        <h2>Show Track</h2>
+      <Card>
+        <CardHeader
+          title={"Show Track"}
+          action={
+            <Button
+              component={Link}
+              to={`/track/edit/${track._id}`}
+              variant="contained"
+              color="primary"
+            >
+              Edit
+            </Button>
+          }
+        />
 
-        <Card>
-          <CardActionArea>
-            <Typography variant="h5">{track.title}</Typography>
-          </CardActionArea>
-        <audio controls>
+        <CardContent>
+          <Typography variant="h5">{track.title}</Typography>
+
+          <audio controls>
             <source src={`/api/track/audio/${track._id}`} />
             Your browser does not support the audio element.
-        </audio>
-        </Card>
-      </div>
+          </audio>
+        </CardContent>
+      </Card>
     );
   }
 }

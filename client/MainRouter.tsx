@@ -17,9 +17,10 @@ import Home from "./pages/Home";
 import ListTracks from "./components/track/List"
 import CreateTrack from "./components/track/Create"
 import ShowTrack from "./components/track/Show"
+import UpdateTrack from "./components/track/Update"
 
 interface MatchParams {
-  id: string
+  id: string;
 }
 
 interface MatchProps extends RouteComponentProps<MatchParams> {}
@@ -67,8 +68,11 @@ class MainRouter extends Component<IProps, IState> {
           <Route exact path="/" component={Home} />
           <Route path="/tracks" component={ListTracks} />
           <Route path="/track/new" component={CreateTrack} />
-          <Route path="/track/:id" render={( {match}: MatchProps) => (
+          <Route path="/track/show/:id" render={( {match}: MatchProps) => (
             <ShowTrack id={match.params.id} />
+          )} />
+          <Route path="/track/edit/:id" render={(props) => (
+            <UpdateTrack id={props.match.params.id} history={props.history} />
           )} />
         
 

@@ -227,10 +227,10 @@ export const audio = (req: Request, res: Response) => {
        * Event listener for when there is no more data to send
        */
       downloadStream.on("end", () => {
-        console.log("Download stream complete");
         res.end();
       });
     })
+    
     .catch((err) => {
       return res.status(404).json(handleError("Track does not exist"));
     });
