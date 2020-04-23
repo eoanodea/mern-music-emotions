@@ -68,8 +68,8 @@ class MainRouter extends Component<IProps, IState> {
           <Route exact path="/" component={Home} />
           <Route path="/tracks" component={ListTracks} />
           <Route path="/track/new" component={CreateTrack} />
-          <Route path="/track/show/:id" render={( {match}: MatchProps) => (
-            <ShowTrack id={match.params.id} />
+          <Route path="/track/show/:id" render={(props) => (
+            <ShowTrack id={props.match.params.id} history={props.history}/>
           )} />
           <Route path="/track/edit/:id" render={(props) => (
             <UpdateTrack id={props.match.params.id} history={props.history} />

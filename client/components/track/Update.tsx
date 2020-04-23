@@ -62,7 +62,6 @@ class Update extends Component<IProps, IState> {
 
   componentDidMount() {
     this.init();
-    // history.pushState('/tracks')
   }
 
   /**

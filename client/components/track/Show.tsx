@@ -17,6 +17,7 @@ import { show } from "./api-track";
 import Error from "../global/Error";
 import Loading from "../global/Loading";
 import { Link } from "react-router-dom";
+import { History } from "history";
 import {
   Button,
   Card,
@@ -26,6 +27,7 @@ import {
   CardHeader,
   CardContent,
 } from "@material-ui/core";
+import Delete from "./Delete";
 
 type ITrack = {
   _id: string;
@@ -40,6 +42,7 @@ type IState = {
 
 type IProps = {
   id: string;
+  history: History;
 };
 
 class Show extends Component<IProps, IState> {
@@ -65,7 +68,7 @@ class Show extends Component<IProps, IState> {
   init = () => {
     const { id } = this.props;
     show(id).then((data) => {
-      if (data.error) this.setState({ loading: false, error: data.error });
+      if (data.error || !data.data) this.setState({ loading: false, error: data.error ? data.error : "No Track Found" });
       else this.setState({ loading: false, track: data.data });
     });
   };
@@ -81,6 +84,7 @@ class Show extends Component<IProps, IState> {
         <CardHeader
           title={"Show Track"}
           action={
+            <React.Fragment>
             <Button
               component={Link}
               to={`/track/edit/${track._id}`}
@@ -89,6 +93,8 @@ class Show extends Component<IProps, IState> {
             >
               Edit
             </Button>
+            <Delete id={track._id} history={this.props.history} />
+            </React.Fragment>
           }
         />
 
