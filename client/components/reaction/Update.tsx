@@ -13,7 +13,7 @@
  */
 
 import React, { Component } from "react";
-import { show, update } from "./api-track";
+import { show, update } from "./api-reaction";
 import Error from "../global/Error";
 import Loading from "../global/Loading";
 import { History } from "history";
@@ -30,14 +30,14 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 
-type ITrack = {
+type IReaction = {
   [key: string]: any;
   _id: string;
   title: string;
 };
 
 type IState = {
-  track: ITrack;
+  reaction: IReaction;
   loading: boolean;
   error: string;
 };
@@ -51,7 +51,7 @@ class Update extends Component<IProps, IState> {
   constructor(props: Readonly<IProps>) {
     super(props);
     this.state = {
-      track: {
+      reaction: {
         _id: "",
         title: "",
       },
@@ -65,56 +65,56 @@ class Update extends Component<IProps, IState> {
   }
 
   /**
-   * Run the fetch track function
+   * Run the fetch reaction function
    */
   init = () => {
     const { id } = this.props;
     show(id).then((data) => {
       if (data.error) this.setState({ loading: false, error: data.error });
-      else this.setState({ loading: false, track: data.data });
+      else this.setState({ loading: false, reaction: data.data });
     });
   };
 
   setLoading = (loading: boolean) => this.setState({ loading });
 
   handleChange = (name: string) => (event: any) => {
-    let { track } = this.state;
-    track[name] = event.target.value;
+    let { reaction } = this.state;
+    reaction[name] = event.target.value;
 
-    this.setState({ track });
+    this.setState({ reaction });
   };
 
   /**
-   * Submit the updated track
+   * Submit the updated reaction
    */
   submit = () => {
     this.setLoading(true);
     const { id } = this.props;
 
-    update(id, this.state.track).then((data) => {
+    update(id, this.state.reaction).then((data) => {
       if (data.error) this.setState({ loading: false, error: data.error });
       else {
         this.setLoading(false);
         
-        this.props.history.push(`/track/show/${data.data._id}`);
+        this.props.history.push(`/reaction/show/${data.data._id}`);
       }
     });
   };
 
   render() {
-    const { loading, track, error } = this.state;
+    const { loading, reaction, error } = this.state;
 
     if (loading) return <Loading />;
     if (error !== "") return <Error message={error} />;
 
     return (
       <Card>
-        <CardHeader title="Update track" />
+        <CardHeader title="Upload a new reaction" />
         <CardContent>
           <form noValidate autoComplete="off">
             <TextField
-              label="Track Name"
-              value={track.title}
+              label="Reaction Name"
+              value={reaction.title}
               onChange={this.handleChange("title")}
             />
           </form>
@@ -124,7 +124,7 @@ class Update extends Component<IProps, IState> {
                 variant="contained" 
                 color="primary" 
                 onClick={this.submit} 
-                disabled={loading || track.title === ""}
+                disabled={loading || reaction.title === ""}
                 endIcon={loading && <CircularProgress size={18} color="secondary" />}
             >Save</Button>
         </CardActions>

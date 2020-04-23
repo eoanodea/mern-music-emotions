@@ -27,7 +27,8 @@ import {
   Typography,
   Icon,
   CardActions,
-  CircularProgress
+  CircularProgress,
+  FormHelperText
 } from "@material-ui/core";
 import { Audiotrack } from "@material-ui/icons";
 
@@ -138,6 +139,7 @@ class Create extends Component<IProps, IState> {
               >
                 Select File
               </Button>
+              <FormHelperText>Max: 6MB</FormHelperText>
             </label>
             {track.data.name !== "" && 
                 <Typography variant="caption">

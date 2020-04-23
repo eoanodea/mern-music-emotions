@@ -5,7 +5,7 @@
  * File Created: Wednesday, 22nd April 2020 6:58:33 pm
  * Author: Eoan O'Dea - eoan@wspace.ie
  * ---------------
- * File Description: Show a single track
+ * File Description: Show a single reaction
  * Last Modified: Wednesday, 22nd April 2020 11:03:13 pm
  * Modified By: Eoan O'Dea - eoan@wspace.ie
  * ---------------
@@ -13,7 +13,7 @@
  */
 
 import React, { Component } from "react";
-import { show } from "./api-track";
+import { show } from "./api-reaction";
 import Error from "../global/Error";
 import Loading from "../global/Loading";
 import { Link } from "react-router-dom";
@@ -21,24 +21,23 @@ import { History } from "history";
 import {
   Button,
   Card,
+  CardActions,
   Typography,
+  CardActionArea,
   CardHeader,
   CardContent,
 } from "@material-ui/core";
 import Delete from "./Delete";
-import CreateReaction from "../reaction/Create";
-import AudioPlayer from "../audio/AudioPlayer";
 
-type ITrack = {
+type IReaction = {
   _id: string;
   title: string;
 };
 
 type IState = {
-  track: ITrack;
+  reaction: IReaction;
   loading: boolean;
   error: string;
-  duration: number;
 };
 
 type IProps = {
@@ -51,13 +50,12 @@ class Show extends Component<IProps, IState> {
   constructor(props: Readonly<IProps>) {
     super(props);
     this.state = {
-      track: {
+      reaction: {
         _id: "",
         title: "",
       },
       loading: true,
       error: "",
-      duration: 0
     };
   }
 
@@ -66,24 +64,19 @@ class Show extends Component<IProps, IState> {
   }
 
   /**
-   * Run the fetch track function
+   * Run the fetch reaction function
    */
   init = () => {
     const { id } = this.props;
     show(id).then((data) => {
-      if (data.error || !data.data) this.setState({ loading: false, error: data.error ? data.error : "No Track Found" });
-      else {
-        this.setState({ loading: false, track: data.data });
-      }
+      if (data.error || !data.data) this.setState({ loading: false, error: data.error ? data.error : "No Reaction Found" });
+      else this.setState({ loading: false, reaction: data.data });
     });
   };
 
-  /**
-   * Loads track from the server
-   */
-  renderSSRData = (data: ITrack) => {
+  renderSSRData = (data: IReaction) => {
     console.log('SSR DATA!!!', data)
-    this.setState({track: data})
+    this.setState({reaction: data})
   }
 
   render() {
@@ -93,44 +86,42 @@ class Show extends Component<IProps, IState> {
     if (
       this.props.data 
       && this.props.data[0] != null
-      && this.state.track.title === "") {
+      && this.state.reaction.title === "") {
         this.renderSSRData(this.props.data[0])
       
     }
 
-    const { loading, track, error } = this.state;
+    const { loading, reaction, error } = this.state;
 
     if (loading) return <Loading />;
     if (error !== "") return <Error message={error} />;
 
-    const src = track._id !== ""
-    ? `/api/track/audio/${track._id}`
-    : null
-
     return (
       <Card>
         <CardHeader
-          title={"Show Track"}
+          title={"Show Reaction"}
           action={
             <React.Fragment>
-              <Button
-                component={Link}
-                to={`/track/edit/${track._id}`}
-                variant="contained"
-                color="primary"
-              >
-                Edit
-              </Button>
-              <Delete id={track._id} history={this.props.history} />
+            <Button
+              component={Link}
+              to={`/reaction/edit/${reaction._id}`}
+              variant="contained"
+              color="primary"
+            >
+              Edit
+            </Button>
+            <Delete id={reaction._id} history={this.props.history} />
             </React.Fragment>
           }
         />
 
         <CardContent>
-          <Typography variant="h5">{track.title}</Typography>
+          <Typography variant="h5">{reaction.title}</Typography>
 
-          {src && <AudioPlayer src={src} />}
-          <CreateReaction />
+          <audio controls>
+            <source src={`/api/reaction/audio/${reaction._id}`} />
+            Your browser does not support the audio element.
+          </audio>
         </CardContent>
       </Card>
     );
