@@ -1,3 +1,19 @@
+/*
+ * File: express.tsx
+ * Project: mern-music-emotions
+ * Version: 1.0.0
+ * File Created: Monday, 20th April 2020 10:02:08 pm
+ * Author: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * File Description: Initilises and runs the express server
+ * Last Modified: Thursday, 23rd April 2020 5:26:54 pm
+ * Modified By: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * Copyright 2020 - WebSpace
+ */
+
+
+
 /**
  * Import primary dependencies
  */

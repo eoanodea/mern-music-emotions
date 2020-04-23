@@ -1,3 +1,19 @@
+/*
+ * File: MainRouter.tsx
+ * Project: mern-music-emotions
+ * Version: 1.0.0
+ * File Created: Tuesday, 21st April 2020 9:13:55 pm
+ * Author: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * File Description: Main Router for the application
+ * Last Modified: Thursday, 23rd April 2020 5:26:22 pm
+ * Modified By: Eoan O'Dea - eoan@wspace.ie
+ * ---------------
+ * Copyright 2020 - WebSpace
+ */
+
+
+
 import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 
