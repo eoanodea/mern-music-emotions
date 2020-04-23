@@ -12,7 +12,9 @@
  * Copyright 2020 - WebSpace
  */
 
+const {CLIENT_ORIGIN} = process.env
 const prefix = "/api/track"
+
 
 /**
  * Create a track
@@ -59,7 +61,7 @@ export const list  = async () => {
  */
 export const show  = async (id: String) => {
     try {
-        const response = await fetch(`${prefix}/${id}`, {
+        const response = await fetch(`${CLIENT_ORIGIN}${prefix}/${id}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

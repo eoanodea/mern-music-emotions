@@ -41,7 +41,6 @@ import config from "../config/config";
 /**
  * Modules for server side rendering
  */
-
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import MainRouter from "../client/MainRouter";
@@ -71,6 +70,7 @@ if (config.env === "development") {
  */
 import { matchRoutes } from "react-router-config";
 import routes from "../client/routeConfig";
+import "isomorphic-fetch";
 
 /**
  * Load branch data
@@ -99,6 +99,7 @@ app.use(compress());
  * Secure apps by setting various HTTP headers
  */
 app.use(helmet());
+
 /**
  * enable CORS - Cross Origin Resource Sharing
  */

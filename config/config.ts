@@ -21,7 +21,7 @@ const config = {
     port: process.env.PORT || 3000,
     jwtSecret: process.env.JWT_SECRET, 
     mongoUri: process.env.MONGO_URI || "",
-    CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || "http://localhost"
+    CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || "http://localhost:3000"
 }
 
 export default config

@@ -43,6 +43,7 @@ type IState = {
 type IProps = {
   id: string;
   history: History;
+  data?: any
 };
 
 class Show extends Component<IProps, IState> {
@@ -73,7 +74,23 @@ class Show extends Component<IProps, IState> {
     });
   };
 
+  renderSSRData = (data: ITrack) => {
+    console.log('SSR DATA!!!', data)
+    this.setState({track: data})
+  }
+
   render() {
+    /**
+     * Render server side rendered data
+     */
+    if (
+      this.props.data 
+      && this.props.data[0] != null
+      && this.state.track.title === "") {
+        this.renderSSRData(this.props.data[0])
+      
+    }
+
     const { loading, track, error } = this.state;
 
     if (loading) return <Loading />;
