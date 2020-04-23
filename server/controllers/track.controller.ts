@@ -1,10 +1,20 @@
-import { Request, Response, NextFunction } from "express";
+/**
+ * Primary dependencies
+ */
+import { Request, Response } from "express";
 import Track from "../models/track.model";
-import { handleSuccess, handleError } from "../helpers/responseHandler";
-import { parseForm } from "../helpers/formHandler";
-import * as _ from "lodash";
-import fs from "fs";
 import mongoose from "mongoose";
+import multer from "multer";
+
+/**
+ * NodeJS Dependency
+ */
+import { Readable } from "stream";
+
+/**
+ * Helpers for sucess and error responses
+ */
+import { handleSuccess, handleError } from "../helpers/responseHandler";
 
 /**
  * Create a track in the database
@@ -12,19 +22,67 @@ import mongoose from "mongoose";
  * @param req
  * @param res
  */
-export const create = async (req: Request, res: Response) => {
-  try {
-    const parsedForm = await parseForm(req);
-    let track = new Track(parsedForm.fields);
-    track.data.data = fs.readFileSync(parsedForm.files.data.path);
-    track.data.contentType = parsedForm.files.data.type;
+export const create = (req: Request, res: Response) => {
+  const storage = multer.memoryStorage();
+  /**
+   * Define limits for file validation
+   */
+  const limits = {
+    fields: 1,
+    fileSize: 6000000,
+    files: 1,
+    parts: 2,
+  };
+  const upload = multer({ storage: storage, limits });
 
-    const response = await track.save();
+  /**
+   * Commence the upload from the Request
+   */
+  upload.single("data")(req, res, (err) => {
+    if (err) return res.status(400).json(handleError(err));
 
-    return res.status(200).json(handleSuccess(response));
-  } catch (err) {
-    return res.status(400).json(handleError(err));
-  }
+    const readableTrackStream = new Readable();
+    readableTrackStream.push(req.file.buffer);
+    /**
+     * Send null to tell Readable there is no more
+     * data to upload
+     */
+    readableTrackStream.push(null);
+
+    /**
+     * Define the GridFSBucket using the mongoose DB connection
+     */
+    let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: "tracks",
+    });
+
+    /**
+     * Create a new Track from the Track Model
+     */
+    let track = new Track();
+    track.title = req.body.title;
+
+    /**
+     * Commence the uplaod stream
+     */
+    let uploadStream = bucket.openUploadStreamWithId(track._id, track.title);
+    readableTrackStream.pipe(uploadStream);
+
+    /**
+     * Listen for upload error and send a 500 response
+     */
+    uploadStream.on("error", () => {
+      return res.status(500).json(handleError("Error uploading file"));
+    });
+
+    /**
+     * On successful upload, save the track
+     */
+    uploadStream.on("finish", () => {
+      track.save();
+      return res.status(200).json(handleSuccess(track));
+    });
+  });
 };
 
 /**
@@ -95,59 +153,85 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 /**
+ * Defines the Promise type return value for trackByID
+ */
+type ITrack = {
+  _id: mongoose.Types.ObjectId;
+  title: string;
+};
+
+/**
+ * Get the track by it's ID within an async Promise
+ *
+ * @param {Request} req
+ */
+export const trackByID = (req: Request) => {
+  return new Promise<ITrack>(async function (resolve, reject) {
+    try {
+      const { id } = req.params;
+      const track: any = await Track.findById(id);
+
+      resolve(track);
+    } catch (err) {
+      reject(err);
+      return;
+    }
+  });
+};
+
+/**
  * Stream a track by it's ID
  *
  * @param req
  * @param res
  */
 export const audio = (req: Request, res: Response) => {
-  let track: any;
+  trackByID(req)
+    .then((track) => {
+      /**
+       * Set the content type of that of the track data
+       * and the ranges to bytes
+       */
+      res.set("content-type", "audio/mp3");
+      res.set("accept-ranges", "bytes");
 
-  try {
-    const { id } = req.params;
-    track = Track.findById(id).select("_id");
-  } catch (err) {
-    return res.status(404).json(handleError("Track does not exist"));
-  }
+      /**
+       * Define the GridFSBucket using the mongoose DB connection
+       */
+      let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+        bucketName: "tracks",
+      });
 
-  /**
-   * Set the content type of that of the track data
-   * and the ranges to bytes
-   */
-  res.set("content-type", track.data.contentType);
-  res.set("accept-ranges", "bytes");
+      /**
+       * Open a download stream from GridFSBucket Object
+       * Using the track ID
+       */
+      let downloadStream = bucket.openDownloadStream(track._id);
 
-  /**
-   * Define the GridFSBucket using the mongoose DB connection
-   */
-  let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
-    bucketName: "tracks",
-  });
+      /**
+       * Event listener to sending data chunks
+       */
+      downloadStream.on("data", (chunk) => {
+        res.write(chunk);
+      });
 
-  /**
-   * Open a download stream from GridFSBucket Object
-   * Using the track ID
-   */
-  let downloadStream = bucket.openDownloadStream(track._id);
+      /**
+       * Event listener for an error
+       */
+      downloadStream.on("error", (err) => {
+        console.log("Download stream error", err);
+        res.sendStatus(404);
+      });
 
-  /**
-   * Event listener to sending data chunks
-   */
-  downloadStream.on("data", (chunk) => {
-    res.write(chunk);
-  });
-
-  /**
-   * Event listener for an error
-   */
-  downloadStream.on("error", () => {
-    res.sendStatus(404);
-  });
-
-  /**
-   * Event listener for when there is no more data to send
-   */
-  downloadStream.on("end", () => {
-    res.end();
-  });
+      /**
+       * Event listener for when there is no more data to send
+       */
+      downloadStream.on("end", () => {
+        console.log("Download stream complete");
+        res.end();
+      });
+    })
+    .catch((err) => {
+      return res.status(404).json(handleError("Track does not exist"));
+    });
 };

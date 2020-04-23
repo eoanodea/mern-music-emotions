@@ -9,7 +9,6 @@ import compress from "compression";
 import cors from "cors";
 import helmet from "helmet";
 import Template from "../template";
-import mongoose from "mongoose";
 
 /**
  * Import Routes
