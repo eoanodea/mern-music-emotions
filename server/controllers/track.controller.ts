@@ -128,8 +128,22 @@ export const update = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const track = await Track.findByIdAndUpdate(id, req.body).select("title");
+    
+    /**
+     * Define the GridFSBucket using the mongoose DB connection
+     */
+    let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: "tracks",
+    });
 
-    return res.status(200).json(handleSuccess(track));
+    /**
+     * Rename the track in GridFSBucket
+     */
+    bucket.rename(track?._id, req.body.title, function(err) {
+      if(err) return res.status(400).json(handleError(err));
+
+      return res.status(200).json(handleSuccess(track));
+    })
   } catch (err) {
     return res.status(400).json(handleError(err));
   }
@@ -144,9 +158,24 @@ export const update = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const track = await Track.deleteOne({ _id: id });
+    const ObjId = new mongoose.mongo.ObjectId(id)
+    const track = await Track.deleteOne({_id: id});
 
-    return res.status(200).json(handleSuccess(track));
+    /**
+     * Define the GridFSBucket using the mongoose DB connection
+     */
+    let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
+      bucketName: "tracks",
+    });
+
+    /**
+     * Rename the track in GridFSBucket
+     */
+    bucket.delete(ObjId, function(err) {
+      if(err) return res.status(400).json(handleError(err));
+
+      return res.status(200).json(handleSuccess(track));
+    })
   } catch (err) {
     return res.status(400).json(handleError(err));
   }
