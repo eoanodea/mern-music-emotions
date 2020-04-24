@@ -17,13 +17,23 @@ import { list } from "./api-track";
 import Error from "../global/Error";
 import Loading from "../global/Loading";
 import { Link } from "react-router-dom";
-import { Button, Card, CardActions, Typography, CardActionArea } from "@material-ui/core";
+import {
+  Button,
+  Typography,
+  ListSubheader,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  CardHeader,
+} from "@material-ui/core";
+import MuiList from "@material-ui/core/List";
+import { Audiotrack, Add } from "@material-ui/icons";
 
 type ITrack = {
-    _id: string
-    title: string,
-    data: Buffer
-}
+  _id: string;
+  title: string;
+  created: Date;
+};
 
 type IState = {
   tracks: ITrack[];
@@ -32,7 +42,7 @@ type IState = {
 };
 
 class List extends Component<IState> {
-  state: { tracks: ITrack[], loading: boolean, error: string } = {
+  state: { tracks: ITrack[]; loading: boolean; error: string } = {
     tracks: [],
     loading: true,
     error: "",
@@ -59,28 +69,45 @@ class List extends Component<IState> {
     if (error !== "") return <Error message={error} />;
 
     return (
-      <div>
-        <h2>List Tracks</h2>
-        <Button 
-            component={Link} 
-            to="/track/new"
-            variant="contained"
-            color="primary"
-        >Add Track</Button>
-        <br />
-        {tracks.map((dat, i) => {
-            return (
-                <Card key={i}>
-                    <Link to={`/track/show/${dat._id}`}>
-                    <CardActionArea>
-                        <Typography variant="h5">{dat.title}</Typography>
-                    </CardActionArea>
-
-                    </Link>
-                </Card>
-            )
-        })}
-      </div>
+      <span>
+        <CardHeader
+          title={"Tracks"}
+          action={
+            <Button
+              component={Link}
+              endIcon={<Add />}
+              to="/track/new"
+              variant="contained"
+              color="primary"
+            >
+              Add Track
+            </Button>
+          }
+        />
+        <MuiList>
+          {tracks.length > 0 ? (
+            tracks.map((dat, i) => {
+              return (
+                <ListItem
+                  key={i}
+                  button
+                  component={Link}
+                  to={`/track/show/${dat._id}`}
+                >
+                  <ListItemIcon>
+                    <Audiotrack />
+                  </ListItemIcon>
+                  <ListItemText primary={dat.title} secondary={dat.created} />
+                </ListItem>
+              );
+            })
+          ) : (
+            <ListItem>
+              <ListItemText primary="No Tracks Available"/>
+            </ListItem>
+          )}
+        </MuiList>
+      </span>
     );
   }
 }

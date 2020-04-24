@@ -19,12 +19,16 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface TrackInterface extends Document {
   title: string;
+  created: Date;
+  updated: Date;
 }
 /**
  * Schema for an audio track
  */
 const TrackSchema: Schema = new Schema({
-  title: { type: String, required: true }
+  title: { type: String, required: true },
+  created: {type: Date, default: Date.now},
+  updated: {type: Date}
 });
 
 const Track = mongoose.model<TrackInterface>("Track", TrackSchema);

@@ -87,7 +87,6 @@ class Create extends Component<IProps, IState> {
     const value = name === "data"
     ? event.target.files[0]
     : event.target.value
-    console.log(value)
     let {track} = this.state
     track[name] = value
     
@@ -104,7 +103,6 @@ class Create extends Component<IProps, IState> {
       if (data.error) this.setState({ loading: false, error: data.error });
       else {
         this.setLoading(false)
-        console.log("success!", data);
         this.props.history.push("/tracks");
       }
     });

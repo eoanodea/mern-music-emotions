@@ -19,6 +19,8 @@ interface ReactionInterface extends Document {
   time: number;
   track: Schema.Types.ObjectId;
   emotion: string;
+  created: Date;
+  updated: Date;
 }
 
 /**
@@ -27,7 +29,9 @@ interface ReactionInterface extends Document {
 const ReactionSchema: Schema = new Schema({
   time: { type: Number, required: true, min: 0 },
   emotion: {type: String, enum: ["Happy", "Sad", "Fear", "Anger"], required: true},
-  track: {type: Schema.Types.ObjectId, ref: "Track"}
+  track: {type: Schema.Types.ObjectId, ref: "Track"},
+  created: {type: Date, default: Date.now},
+  updated: {type: Date}
 });
 
 const Reaction = mongoose.model<ReactionInterface>("Reaction", ReactionSchema);

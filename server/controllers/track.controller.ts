@@ -111,7 +111,7 @@ export const create = (req: Request, res: Response) => {
  */
 export const list = async (req: Request, res: Response) => {
   try {
-    const tracks = await Track.find({}).select("title");
+    const tracks = await Track.find({});
 
     return res.status(200).json(handleSuccess(tracks));
   } catch (err) {
