@@ -17,7 +17,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 interface ReactionInterface extends Document {
   time: number;
-  track: Schema.Types.ObjectId;
+  track: mongoose.Types.ObjectId;
   emotion: string;
   created: Date;
   updated: Date;

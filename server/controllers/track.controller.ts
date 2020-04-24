@@ -16,7 +16,7 @@
  * Primary dependencies
  */
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import multer from "multer";
 
 /**
@@ -33,6 +33,7 @@ import Track from "../models/track.model";
  * Helpers for sucess and error responses
  */
 import { handleSuccess, handleError } from "../helpers/responseHandler";
+import Reaction from "../models/reaction.model";
 
 /**
  * Create a track in the database
@@ -176,7 +177,20 @@ export const update = async (req: Request, res: Response) => {
 export const remove = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const ObjId = new mongoose.mongo.ObjectId(id);
+    /**
+     * Create a mongoose ObjectID from the id in the route params
+     * used for GridFSBucket
+     */
+    const ObjId = new mongoose.Types.ObjectId(id);
+    
+    /**
+     * Remove any reactions associated with the track
+     */
+    const reactions = await Reaction.deleteMany({track: ObjId})
+    
+    /**
+     * Remove the track object
+     */
     const track = await Track.deleteOne({ _id: id });
 
     /**
@@ -192,7 +206,7 @@ export const remove = async (req: Request, res: Response) => {
     bucket.delete(ObjId, function (err) {
       if (err) return res.status(400).json(handleError(err));
 
-      return res.status(200).json(handleSuccess(track));
+      return res.status(200).json(handleSuccess({track, reactions}));
     });
   } catch (err) {
     return res.status(400).json(handleError(err));
