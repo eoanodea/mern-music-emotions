@@ -93,7 +93,7 @@ class MainRouter extends Component<IProps, IState> {
 
         </Switch>
 
-        <Footer />
+        {/* <Footer /> */}
       </React.Fragment>
     );
   }
