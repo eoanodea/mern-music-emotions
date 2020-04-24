@@ -16,6 +16,7 @@ import { History } from "history";
 type IProps = {
   id: string;
   history: History;
+  actionButton: string;
 };
 
 type IState = {
@@ -63,6 +64,7 @@ class Delete extends Component<IProps, IState> {
     return (
       <React.Fragment>
         <Button
+          className={this.props.actionButton}
           color="secondary"
           variant="contained"
           endIcon={<DeleteIcon />}

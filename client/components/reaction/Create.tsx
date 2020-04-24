@@ -39,7 +39,7 @@ import {
 } from "@material-ui/icons";
 import ReactionCard from "./ReactionCard";
 
-const styles = ({ palette, spacing }: Theme) =>
+const styles = ({ spacing }: Theme) =>
   createStyles({
     input: {
       display: "none",

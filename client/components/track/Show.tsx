@@ -21,12 +21,13 @@ import { History } from "history";
 import {
   Button,
   Card,
-  Typography,
   CardHeader,
   CardContent,
+  withStyles,
+  createStyles,
+  Theme
 } from "@material-ui/core";
 import Delete from "./Delete";
-import CreateReaction from "../reaction/Create";
 import AudioPlayer from "../audio/AudioPlayer";
 
 type ITrack = {
@@ -45,7 +46,16 @@ type IProps = {
   id: string;
   history: History;
   data?: any;
+  classes: {
+    actionButton: string;
+  }
 };
+
+const styles = ({ spacing }: Theme ) => createStyles ({
+  actionButton: {
+    margin: spacing(2)
+  }
+})
 
 class Show extends Component<IProps, IState> {
   constructor(props: Readonly<IProps>) {
@@ -86,7 +96,6 @@ class Show extends Component<IProps, IState> {
    * Loads track from the server
    */
   renderSSRData = (data: ITrack) => {
-    console.log("SSR DATA!!!", data);
     this.setState({ track: data });
   };
 
@@ -103,6 +112,7 @@ class Show extends Component<IProps, IState> {
     }
 
     const { loading, track, error } = this.state;
+    const {classes} = this.props
 
     if (loading) return <Loading />;
     if (error !== "") return <Error message={error} />;
@@ -112,17 +122,18 @@ class Show extends Component<IProps, IState> {
         <CardHeader
           title={track.title}
           action={
-            <React.Fragment>
+            <span>
               <Button
                 component={Link}
                 to={`/track/edit/${track._id}`}
                 variant="contained"
                 color="primary"
+                className={classes.actionButton}
               >
                 Edit
               </Button>
-              <Delete id={track._id} history={this.props.history} />
-            </React.Fragment>
+              <Delete id={track._id} actionButton={classes.actionButton} history={this.props.history} />
+            </span>
           }
         />
 
@@ -134,4 +145,4 @@ class Show extends Component<IProps, IState> {
   }
 }
 
-export default Show;
+export default withStyles(styles)(Show);
