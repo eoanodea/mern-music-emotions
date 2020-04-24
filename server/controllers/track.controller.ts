@@ -111,7 +111,7 @@ export const create = (req: Request, res: Response) => {
  */
 export const list = async (req: Request, res: Response) => {
   try {
-    const tracks = await Track.find({});
+    const tracks = await Track.find({}).select("title created");
 
     return res.status(200).json(handleSuccess(tracks));
   } catch (err) {
@@ -128,7 +128,7 @@ export const list = async (req: Request, res: Response) => {
 export const show = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const track = await Track.findById(id).select("title");
+    const track = await Track.findById(id).select("title created");
 
     return res.status(200).json(handleSuccess(track));
   } catch (err) {
