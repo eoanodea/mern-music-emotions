@@ -7,6 +7,13 @@ let theme = createMuiTheme({
     palette: {
         primary: { main: '#FBC02D' },
         secondary: { main: '#2d67fb' }
+    },
+    overrides: {
+        MuiCardActions: {
+            root: {
+                justifyContent: 'center'
+            }
+        }
     }
 })
 

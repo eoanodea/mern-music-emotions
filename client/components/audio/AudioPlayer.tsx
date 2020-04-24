@@ -13,11 +13,13 @@
  */
 
 import React, { Component } from "react";
-import { Slider } from "@material-ui/core";
+import { Slider, Typography } from "@material-ui/core";
 import { Controls } from "./Controls";
+import CreateReaction from "../reaction/Create";
+import moment from 'moment'
 
 type IProps = {
-  src: string;
+  id: string;
 };
 
 type IState = {
@@ -35,7 +37,7 @@ class AudioPlayer extends Component<IProps, IState> {
     this.state = {
       duration: 0,
       currentTime: 0,
-      playing: false
+      playing: false,
     };
 
     this.audioRef = React.createRef<HTMLAudioElement>();
@@ -55,12 +57,11 @@ class AudioPlayer extends Component<IProps, IState> {
    * Controls and listeners for the audio and range input
    */
   initializeAudioPlayer = () => {
-
     /**
      * Sync slider position with song current time
      */
     this.audioRef.onplay = () => {
-      this.setState({playing: true})
+      this.setState({ playing: true });
       this.currentTimeInterval = setInterval(() => {
         this.setState({ currentTime: this.audioRef.currentTime });
       }, 100);
@@ -72,37 +73,34 @@ class AudioPlayer extends Component<IProps, IState> {
      */
     this.audioRef.onpause = () => {
       clearInterval(this.currentTimeInterval);
-      this.setState({playing: false})
+      this.setState({ playing: false });
     };
 
     /**
      * Get duration of the audio and set it as max slider value
      */
     this.audioRef.ondurationchange = () => {
-      console.log('duration change!', this.audioRef.duration)
+      console.log("duration change!", this.audioRef.duration);
       this.setState({ duration: this.audioRef.duration });
     };
-
   };
 
   /**
    * Seek functionality for the slider
    */
   handleSliderChange = (e: React.ChangeEvent<any>, value: any) => {
-    if(this.audioRef) {
+    if (this.audioRef) {
       this.audioRef.currentTime = value;
-      this.setState({currentTime: this.audioRef.currentTime})
+      this.setState({ currentTime: this.audioRef.currentTime });
     }
-  }
+  };
 
   /**
    * Play the current audio file
    */
   handlePlay = () => {
     if (this.audioRef) {
-      !this.audioRef.paused
-        ? this.audioRef.pause()
-        : this.audioRef.play();        
+      !this.audioRef.paused ? this.audioRef.pause() : this.audioRef.play();
     }
   };
 
@@ -112,27 +110,45 @@ class AudioPlayer extends Component<IProps, IState> {
   handleStop = () => {
     if (this.audioRef && this.sliderRef) {
       this.audioRef.pause();
-      this.audioRef.currentTime = 0
+      this.audioRef.currentTime = 0;
       this.setState({ currentTime: 0 });
     }
   };
 
+ formatAudioTime(seconds: number) { 
+    return moment.utc(seconds * 1000).format("mm:ss");
+  }
+
   render() {
-    const { src } = this.props;
+    const { id } = this.props;
     const { currentTime, duration, playing } = this.state;
+    const src = `/api/track/audio/${id}`;
 
     return (
-      <div>
+      <React.Fragment>
         <audio
           ref={(input) => {
             this.audioRef = input;
           }}
           src={src}
         />
-        <Slider value={currentTime} min={0} max={duration} onChange={this.handleSliderChange} />
-        <Controls playing={playing} currentTime={currentTime} onPlay={this.handlePlay} onStop={this.handleStop} />
-
-      </div>
+        <Slider
+          value={currentTime}
+          min={0}
+          max={duration}
+          valueLabelDisplay="auto"
+          valueLabelFormat={this.formatAudioTime}
+          onChange={this.handleSliderChange}
+        />
+        <Typography style={{textAlign: 'center'}} variant="caption">{this.formatAudioTime(currentTime) + ' / ' + this.formatAudioTime(duration)}</Typography>
+        <Controls
+          playing={playing}
+          currentTime={currentTime}
+          onPlay={this.handlePlay}
+          onStop={this.handleStop}
+        />
+        <CreateReaction id={id} time={currentTime} />
+      </React.Fragment>
     );
   }
 }

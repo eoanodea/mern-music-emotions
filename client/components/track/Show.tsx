@@ -44,7 +44,7 @@ type IState = {
 type IProps = {
   id: string;
   history: History;
-  data?: any
+  data?: any;
 };
 
 class Show extends Component<IProps, IState> {
@@ -57,7 +57,7 @@ class Show extends Component<IProps, IState> {
       },
       loading: true,
       error: "",
-      duration: 0
+      duration: 0,
     };
   }
 
@@ -71,7 +71,11 @@ class Show extends Component<IProps, IState> {
   init = () => {
     const { id } = this.props;
     show(id).then((data) => {
-      if (data.error || !data.data) this.setState({ loading: false, error: data.error ? data.error : "No Track Found" });
+      if (data.error || !data.data)
+        this.setState({
+          loading: false,
+          error: data.error ? data.error : "No Track Found",
+        });
       else {
         this.setState({ loading: false, track: data.data });
       }
@@ -82,20 +86,20 @@ class Show extends Component<IProps, IState> {
    * Loads track from the server
    */
   renderSSRData = (data: ITrack) => {
-    console.log('SSR DATA!!!', data)
-    this.setState({track: data})
-  }
+    console.log("SSR DATA!!!", data);
+    this.setState({ track: data });
+  };
 
   render() {
     /**
      * Render server side rendered data
      */
     if (
-      this.props.data 
-      && this.props.data[0] != null
-      && this.state.track.title === "") {
-        this.renderSSRData(this.props.data[0])
-      
+      this.props.data &&
+      this.props.data[0] != null &&
+      this.state.track.title === ""
+    ) {
+      this.renderSSRData(this.props.data[0]);
     }
 
     const { loading, track, error } = this.state;
@@ -103,14 +107,10 @@ class Show extends Component<IProps, IState> {
     if (loading) return <Loading />;
     if (error !== "") return <Error message={error} />;
 
-    const src = track._id !== ""
-    ? `/api/track/audio/${track._id}`
-    : null
-
     return (
       <Card>
         <CardHeader
-          title={"Show Track"}
+          title={track.title}
           action={
             <React.Fragment>
               <Button
@@ -127,10 +127,7 @@ class Show extends Component<IProps, IState> {
         />
 
         <CardContent>
-          <Typography variant="h5">{track.title}</Typography>
-
-          {src && <AudioPlayer src={src} />}
-          <CreateReaction />
+          {track._id !== "" && <AudioPlayer id={track._id} />}
         </CardContent>
       </Card>
     );

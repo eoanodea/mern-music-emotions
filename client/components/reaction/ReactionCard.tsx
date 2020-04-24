@@ -1,7 +1,7 @@
 /**
  * Primary dependencies
  */
-import React, { Component } from "react";
+import React from "react";
 
 /**
  * Component Library imports
@@ -10,10 +10,6 @@ import {
   Paper,
   Typography,
   CardActionArea,
-  Grid,
-  createStyles,
-  Theme,
-  withStyles,
   Grow,
 } from "@material-ui/core";
 
@@ -25,25 +21,11 @@ type IProps = {
     name: string;
     icon: any;
   };
-  classes: {
-    reactionPaper: string;
-  };
+  reactionPaper: string
   index: number;
   onSelect: (name: string) => void;
 };
 
-/**
- * Injected styles for component
- * 
- * @param spacing 
- */
-const styles = ({ spacing }: Theme) =>
-  createStyles({
-    reactionPaper: {
-      padding: spacing(4),
-      textAlign: "center",
-    },
-  });
 
 /**
  * Renders a reaction
@@ -52,7 +34,7 @@ const ReactionCard = (props: IProps) => (
     <Grow in={true} timeout={500 * props.index}>
       <Paper elevation={4}>
         <CardActionArea
-          className={props.classes.reactionPaper}
+          className={props.reactionPaper}
           onClick={() => props.onSelect(props.reaction.name)}
         >
           <Typography variant="h4">{props.reaction.icon}</Typography>
@@ -62,4 +44,4 @@ const ReactionCard = (props: IProps) => (
     </Grow>
 );
 
-export default withStyles(styles)(ReactionCard);
+export default ReactionCard;

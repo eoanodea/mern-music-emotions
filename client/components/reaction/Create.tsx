@@ -27,16 +27,19 @@ import {
   CardActions,
   CircularProgress,
   Grid,
+  Grow,
+  Paper,
 } from "@material-ui/core";
 import {
   SentimentVerySatisfied, 
   SentimentVeryDissatisfiedOutlined,
   SentimentVeryDissatisfied,
   SentimentDissatisfied,
+  CheckCircle,
 } from "@material-ui/icons";
 import ReactionCard from "./ReactionCard";
 
-const styles = ({ palette }: Theme) =>
+const styles = ({ palette, spacing }: Theme) =>
   createStyles({
     input: {
       display: "none",
@@ -46,14 +49,21 @@ const styles = ({ palette }: Theme) =>
     },
     selectedItem: {
       textAlign: 'center'
+    },
+    reactionPaper: {
+      padding: spacing(4),
+      textAlign: "center",
     }
   });
 
 type IProps = {
+  id: string;
+  time: number;
   classes: {
     input: string;
     error: string;
     selectedItem: string;
+    reactionPaper: string;
   };
 };
 
@@ -65,6 +75,7 @@ type IState = {
   };
   loading: boolean;
   error: string;
+  success: boolean;
 };
 
 const reactions = [
@@ -97,6 +108,7 @@ class Create extends Component<IProps, IState> {
       },
       loading: false,
       error: "",
+      success: false
     };
   }
 
@@ -118,11 +130,12 @@ class Create extends Component<IProps, IState> {
    */
   submit = () => {
     this.setLoading(true);
-    create(this.state.reaction).then((data) => {
+    let { reaction } = this.state
+    reaction.time = this.props.time
+    create(reaction).then((data) => {
       if (data.error) this.setState({ loading: false, error: data.error });
       else {
-        this.setLoading(false);
-        console.log("success!", data);
+        this.setState({loading: false, success: true})
       }
     });
   };
@@ -139,11 +152,30 @@ class Create extends Component<IProps, IState> {
     this.setState({reaction})
   }
 
+  reset = () => {
+    let { reaction } = this.state
+    reaction.emotion = ""
+    this.setState({success: false, reaction})
+  }
+
   render() {
     const { classes } = this.props;
-    const { reaction, loading, error } = this.state;
+    const { success, reaction, loading, error } = this.state;
+    if(success) return (
+      <Grow in={true}>
+        <Paper elevation={2} className={classes.reactionPaper}>
+          <Typography variant="h4">
+            <CheckCircle color="primary" fontSize="large" />
+          </Typography>
+          <Typography variant="h5">Reaction Saved</Typography>
+          <br />
+          <Button variant="contained" color="secondary" onClick={this.reset}>Pick Another</Button>
+        </Paper>
+      </Grow>
+    )
+
     return (
-      <Card>
+      <div>
         <CardHeader title="Select a reaction" />
         <CardContent>
           <Grid container justify="space-evenly" spacing={3}>
@@ -151,13 +183,13 @@ class Create extends Component<IProps, IState> {
             reaction.emotion !== ""
             ? (
               <Grid item xs={12} sm={5} className={classes.selectedItem}>
-                  <ReactionCard onSelect={this.onSelectReaction} index={2} reaction={reactions.filter(dat => dat.name === reaction.emotion)[0]} />
+                  <ReactionCard reactionPaper={classes.reactionPaper} onSelect={this.onSelectReaction} index={2} reaction={reactions.filter(dat => dat.name === reaction.emotion)[0]} />
                   <br />
                   <Button onClick={this.resetSelection} variant="contained" color="secondary">Select Again</Button>
               </Grid>
             )
             : reactions.map((dat, i) => {
-              return <Grid key={i} item xs={12} sm={5}><ReactionCard onSelect={this.onSelectReaction} index={i} reaction={dat} /></Grid>;
+              return <Grid key={i} item xs={12} sm={5}><ReactionCard reactionPaper={classes.reactionPaper} onSelect={this.onSelectReaction} index={i} reaction={dat} /></Grid>;
             })}
           </Grid>
 
@@ -184,7 +216,7 @@ class Create extends Component<IProps, IState> {
             Save
           </Button>
         </CardActions>
-      </Card>
+      </div>
     );
   }
 }
