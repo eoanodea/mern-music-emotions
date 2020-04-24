@@ -9,6 +9,11 @@ let theme = createMuiTheme({
         secondary: { main: '#2d67fb' }
     },
     overrides: {
+        MuiPaper: {
+            root: {
+                textAlign: 'center'
+            }
+        },
         MuiCardActions: {
             root: {
                 justifyContent: 'center'

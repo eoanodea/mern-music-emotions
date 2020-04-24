@@ -1,6 +1,13 @@
 # MERN Stack Music Emotions App
 
-A starter pack for a server side rendered MERN (MongoDB, Express.js, React.js Node.js) application written in TypeScript
+### Description
+
+An application which is capable of uploading and streaming audio files, which a user can select a reaction to. The reaction tracks the point of the audio file where the user chose to react, and which audio file it's related to.
+
+The application is a server side rendered MERN (MongoDB, Express.js, React.js Node.js) application written in TypeScript.
+
+### Demo
+A live demo of the application can be found here - http://music-app.wspace.ie/
 
 
 #### What you need to run this code

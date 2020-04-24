@@ -112,10 +112,6 @@ class Create extends Component<IProps, IState> {
     };
   }
 
-  componentDidMount() {
-    this.reactionData = new FormData();
-  }
-
   setLoading = (loading: boolean) => this.setState({ loading });
 
   handleChange = (name: string) => (event: any) => {
@@ -132,6 +128,7 @@ class Create extends Component<IProps, IState> {
     this.setLoading(true);
     let { reaction } = this.state
     reaction.time = this.props.time
+    reaction.track = this.props.id
     create(reaction).then((data) => {
       if (data.error) this.setState({ loading: false, error: data.error });
       else {

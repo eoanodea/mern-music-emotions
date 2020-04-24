@@ -12,8 +12,6 @@
  * Copyright 2020 - WebSpace
  */
 
-
-
 import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 
@@ -23,17 +21,18 @@ import { Route, Switch } from "react-router-dom";
 
 import Loading from "./components/global/Loading";
 import Error from "./components/global/Error";
-import Header  from "./components/layout/Header";
+import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 
 /**
  * Pages
  */
 import Home from "./pages/Home";
-import ListTracks from "./components/track/List"
-import CreateTrack from "./components/track/Create"
-import ShowTrack from "./components/track/Show"
-import UpdateTrack from "./components/track/Update"
+import ListTracks from "./components/track/List";
+import CreateTrack from "./components/track/Create";
+import ShowTrack from "./components/track/Show";
+import UpdateTrack from "./components/track/Update";
+import { Grid } from "@material-ui/core";
 
 /**
  * Type checking for component Props
@@ -80,19 +79,33 @@ class MainRouter extends Component<IProps, IState> {
       <React.Fragment>
         <Header />
 
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/tracks" component={ListTracks} />
-          <Route path="/track/new" component={CreateTrack} />
-          <Route path="/track/show/:id" render={(props) => (
-            <ShowTrack id={props.match.params.id} history={props.history}/>
-          )} />
-          <Route path="/track/edit/:id" render={(props) => (
-            <UpdateTrack id={props.match.params.id} history={props.history} />
-          )} />
-
-        </Switch>
-
+        <Grid container spacing={8} justify="center" style={{marginTop: '20px', marginBottom: '20px'}}>
+          <Grid item xs={11}>
+            <Switch>
+              <Route exact path="/" component={Home} />
+              <Route path="/tracks" component={ListTracks} />
+              <Route path="/track/new" component={CreateTrack} />
+              <Route
+                path="/track/show/:id"
+                render={(props) => (
+                  <ShowTrack
+                    id={props.match.params.id}
+                    history={props.history}
+                  />
+                )}
+              />
+              <Route
+                path="/track/edit/:id"
+                render={(props) => (
+                  <UpdateTrack
+                    id={props.match.params.id}
+                    history={props.history}
+                  />
+                )}
+              />
+            </Switch>
+          </Grid>
+        </Grid>
         {/* <Footer /> */}
       </React.Fragment>
     );

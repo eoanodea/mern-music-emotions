@@ -16,13 +16,15 @@ class Header extends Component {
   render() {
     return (
       <AppBar position="static">
-        <Toolbar>
+        <Toolbar style={{justifyContent: 'space-between'}}>
           <Link to="/">
             <Typography variant="h6">Title</Typography>
           </Link>
 
-          <Button component={Link} to="/">Home</Button>
-          <Button component={Link} to="/tracks">Tracks</Button>
+          <div>
+            <Button component={Link} to="/">Home</Button>
+            <Button component={Link} to="/tracks">Tracks</Button>
+          </div>
         </Toolbar>
       </AppBar>
     )
