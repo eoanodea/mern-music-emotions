@@ -18,7 +18,8 @@ type IProps = {
 
 const styles = ({  spacing }: Theme) => createStyles({
   wrapper: {
-    padding: spacing(4)
+    padding: spacing(4),
+    textAlign: 'center'
   }
 })
 
@@ -33,7 +34,7 @@ class Home extends Component<IProps> {
         <Typography variant="h4">
           <Audiotrack fontSize="large" color="primary" />
         </Typography>
-        <Typography variant="h3">Music App</Typography>
+        <Typography variant="h3">Emotune</Typography>
         <br />
         <Button color="secondary" variant="contained" endIcon={<ArrowRight />} component={Link} to="/tracks">Get Started</Button>   
       </Paper>

@@ -7,11 +7,11 @@ let theme = createMuiTheme({
     palette: {
         primary: { main: '#FBC02D' },
         secondary: { main: '#2d67fb' }
-    },
+    },        
     overrides: {
-        MuiPaper: {
+        MuiTypography: {
             root: {
-                textAlign: 'center'
+                textAlign: 'inherit'
             }
         },
         MuiCardActions: {
