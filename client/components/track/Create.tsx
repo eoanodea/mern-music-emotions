@@ -28,34 +28,47 @@ import {
   Icon,
   CardActions,
   CircularProgress,
-  FormHelperText
+  FormHelperText,
+  Grow,
 } from "@material-ui/core";
 import { Audiotrack } from "@material-ui/icons";
 
-const styles = ({ palette }: Theme ) => createStyles({
+const styles = ({ spacing }: Theme) =>
+  createStyles({
     input: {
-        display: 'none'
+      display: "none",
     },
     error: {
-        verticalAlign: "middle"
-    }
-})
+      verticalAlign: "middle",
+    },
+    inputContainer: {
+      display: "flex",
+      justifyContent: "center",
+      margin: `${spacing(2)}px auto`,
+      flexDirection: "column",
+      textAlign: "center",
+      "& p": {
+        textAlign: "center",
+      },
+    },
+  });
 
 type IProps = {
   history: History;
   classes: {
-      input: string;
-      error: string;
-  }
+    input: string;
+    error: string;
+    inputContainer: string;
+  };
 };
 
 type IState = {
   track: {
-      [key: string]: any;
-      title: string;
-      data: {
-          name: string;
-      };
+    [key: string]: any;
+    title: string;
+    data: {
+      name: string;
+    };
   };
   loading: boolean;
   error: string;
@@ -69,7 +82,7 @@ class Create extends Component<IProps, IState> {
       track: {
         title: "",
         data: {
-            name: ""
+          name: "",
         },
       },
       loading: false,
@@ -78,93 +91,102 @@ class Create extends Component<IProps, IState> {
   }
 
   componentDidMount() {
-      this.trackData = new FormData()
+    this.trackData = new FormData();
   }
 
-  setLoading = (loading: boolean) => this.setState({loading})
+  /**
+   * Toggle oading
+   */
+  setLoading = (loading: boolean) => this.setState({ loading });
 
+  /**
+   * Handles the binding of the input value and file upload
+   */
   handleChange = (name: string) => (event: any) => {
-    const value = name === "data"
-    ? event.target.files[0]
-    : event.target.value
-    let {track} = this.state
-    track[name] = value
-    
-    this.trackData.set(name, value)
-    this.setState({track})
-  }
+    const value = name === "data" ? event.target.files[0] : event.target.value;
+    let { track } = this.state;
+    track[name] = value;
+
+    this.trackData.set(name, value);
+    this.setState({ track });
+  };
 
   /**
    * Submit the newely uploaded track
    */
   submit = () => {
-    this.setLoading(true)
+    this.setLoading(true);
     create(this.trackData).then((data) => {
       if (data.error) this.setState({ loading: false, error: data.error });
       else {
-        this.setLoading(false)
+        this.setLoading(false);
         this.props.history.push("/tracks");
       }
     });
   };
 
   render() {
-    const {classes} = this.props
-    const {track, loading, error} = this.state
+    const { classes } = this.props;
+    const { track, loading, error } = this.state;
     return (
       <Card>
         <CardHeader title="Upload a new track" />
         <CardContent>
           <form noValidate autoComplete="off">
-            <TextField 
-                label="Track Name"
-                value={track.title}
-                onChange={this.handleChange("title")}
-                />
-            <input 
-                accept="audio/*" 
-                type="file" 
+            <TextField
+              label="Track Name"
+              value={track.title}
+              onChange={this.handleChange("title")}
+            />
+            <div className={classes.inputContainer}>
+              <input
+                accept="audio/*"
+                type="file"
                 id="upload-track"
                 className={classes.input}
                 onChange={this.handleChange("data")}
-                />
-            <label htmlFor="upload-track">
-              <Button
-                variant="contained"
-                color="primary"
-                component="span"
-                endIcon={<Audiotrack />}
-              >
-                Select File
-              </Button>
-              <FormHelperText>Max: 6MB</FormHelperText>
-            </label>
-            {track.data.name !== "" && 
-                <Typography variant="caption">
-                    {track.data.name}
-                </Typography>
-            }
+              />
+              <label htmlFor="upload-track">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component="span"
+                  endIcon={<Audiotrack />}
+                >
+                  Select File
+                </Button>
+                <FormHelperText>Max: 6MB</FormHelperText>
+              </label>
+              {track.data.name !== "" && (
+                <Grow in={true} timeout={1000}>
+                  <Typography variant="caption">{track.data.name}</Typography>
+                </Grow>
+              )}
+            </div>
           </form>
           <br />
-        {this.state.error !== "" && (
+          {this.state.error !== "" && (
             <Typography component="p" color="error">
-            <Icon color="error" className={classes.error}>
+              <Icon color="error" className={classes.error}>
                 error
-            </Icon>
-            {this.state.error}
+              </Icon>
+              {this.state.error}
             </Typography>
-        )}
+          )}
         </CardContent>
         <CardActions>
-            <Button 
-                variant="contained" 
-                color="primary" 
-                onClick={this.submit} 
-                disabled={loading || track.title === "" || track.data.name === ""}
-                endIcon={loading && <CircularProgress size={18} color="secondary" />}
-            >Save</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.submit}
+            disabled={loading || track.title === "" || track.data.name === ""}
+            endIcon={
+              loading && <CircularProgress size={18} color="secondary" />
+            }
+          >
+            Save
+          </Button>
         </CardActions>
-
       </Card>
     );
   }
