@@ -59,11 +59,11 @@ const app: Application = express();
 /**
  * Compile Development Bundle
  */
-// import devBundle from "./devBundle";
+import devBundle from "./devBundle";
 
-// if (config.env === "development") {
-//   devBundle.compile(app);
-// }
+if (config.env === "development") {
+  devBundle.compile(app);
+}
 
 /**
  * Server Side Rending with Data
