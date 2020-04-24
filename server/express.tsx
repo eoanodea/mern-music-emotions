@@ -79,7 +79,7 @@ import "isomorphic-fetch";
  */
 const loadBranchData = (location: string) => {
   const branch = matchRoutes(routes, location);
-  const promises = branch.map(({ route, match }) => {
+  const promises = branch.map(({ route }) => {
     return route.loadData
       ? route.loadData(branch[0].match.params)
       : Promise.resolve(null);
