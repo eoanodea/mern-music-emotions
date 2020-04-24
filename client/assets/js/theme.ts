@@ -18,6 +18,13 @@ let theme = createMuiTheme({
             root: {
                 justifyContent: 'center'
             }
+        },
+        MuiFormControl: {
+            root: {
+                width: '80%',
+                margin: '0 auto',
+                display: 'flex'
+            }
         }
     }
 })
