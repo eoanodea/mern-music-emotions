@@ -9,6 +9,7 @@ import {
   Typography,
   CircularProgress,
   Snackbar,
+  IconButton,
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { History } from "history";
@@ -16,7 +17,6 @@ import { History } from "history";
 type IProps = {
   id: string;
   history: History;
-  actionButton: string;
 };
 
 type IState = {
@@ -63,15 +63,12 @@ class Delete extends Component<IProps, IState> {
     const { loading, error, open, openSnack } = this.state;
     return (
       <React.Fragment>
-        <Button
-          className={this.props.actionButton}
+        <IconButton
           color="secondary"
-          variant="contained"
-          endIcon={<DeleteIcon />}
           onClick={this.handleDialog}
         >
-          Delete Track
-        </Button>
+          <DeleteIcon />
+        </IconButton>
         <Dialog open={open} onClose={this.handleDialog}>
           <DialogTitle>Confirm Delete Track</DialogTitle>
           <DialogContent>

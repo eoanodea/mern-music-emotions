@@ -60,9 +60,10 @@ export const list  = async () => {
  * Retreive a track from the server
  */
 export const show  = async (id: String) => {
-    console.log('fetching URL with ', `${config.CLIENT_ORIGIN}${prefix}/${id}`)
+    // const url = window.location.href
+    // console.log('fetching with!', url)
     try {
-        const response = await fetch(`${config.CLIENT_ORIGIN}${prefix}/${id}`, {
+        const response = await fetch(`${prefix}/${id}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
