@@ -249,12 +249,13 @@ export const trackByID = (req: Request) => {
 export const audio = (req: Request, res: Response) => {
   trackByID(req)
     .then((track) => {
+
       /**
        * Set the content type of that of the track data
        * and the ranges to bytes
        */
       res.set("content-type", "audio/mp3");
-      res.set("accept-ranges", "bytes");
+      res.set("Accept-Ranges", "bytes");
 
       /**
        * Define the GridFSBucket using the mongoose DB connection
@@ -262,6 +263,9 @@ export const audio = (req: Request, res: Response) => {
       let bucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
         bucketName: "tracks",
       });
+
+      // let file = bucket.find({_id: track._id})
+      // console.log('finding file', file)
 
       /**
        * Open a download stream from GridFSBucket Object

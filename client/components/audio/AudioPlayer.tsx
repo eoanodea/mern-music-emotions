@@ -13,10 +13,11 @@
  */
 
 import React, { Component } from "react";
-import { Slider, Typography } from "@material-ui/core";
+import { Slider, Typography, Button } from "@material-ui/core";
 import { Controls } from "./Controls";
 import CreateReaction from "../reaction/Create";
 import moment from 'moment'
+import { PlayArrow } from "@material-ui/icons";
 
 type IProps = {
   id: string;
@@ -26,6 +27,9 @@ type IState = {
   duration: number;
   currentTime: number;
   playing: boolean;
+  isActive: boolean;
+  ios: boolean;
+  safari: boolean;
 };
 
 class AudioPlayer extends Component<IProps, IState> {
@@ -38,6 +42,11 @@ class AudioPlayer extends Component<IProps, IState> {
       duration: 0,
       currentTime: 0,
       playing: false,
+      isActive: true,
+      //@ts-ignore
+      ios: process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent),
+      //@ts-ignore
+      safari: /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification))
     };
 
     this.audioRef = React.createRef<HTMLAudioElement>();
@@ -50,6 +59,15 @@ class AudioPlayer extends Component<IProps, IState> {
    * when the component mounts
    */
   componentDidMount() {
+    console.log('safari!', this.state.safari)
+    console.log('ios!', this.state.ios)
+    if(this.state.ios || this.state.safari) {
+      this.setState({isActive: false})
+    } else this.initializeAudioPlayer();
+  }
+
+  setActive = () => {
+    this.setState({isActive: true})
     this.initializeAudioPlayer();
   }
 
@@ -57,11 +75,13 @@ class AudioPlayer extends Component<IProps, IState> {
    * Controls and listeners for the audio and range input
    */
   initializeAudioPlayer = () => {
+    console.log('running audio player!', this.audioRef)
     /**
      * Sync slider position with song current time
      */
     this.audioRef.onplay = () => {
-      this.setState({ playing: true });
+      console.log('playing!', this.audioRef.duration)
+      this.setState({ playing: true, duration: this.audioRef.duration });
       this.currentTimeInterval = setInterval(() => {
         this.setState({ currentTime: this.audioRef.currentTime });
       }, 100);
@@ -121,7 +141,7 @@ class AudioPlayer extends Component<IProps, IState> {
 
   render() {
     const { id } = this.props;
-    const { currentTime, duration, playing } = this.state;
+    const { isActive, currentTime, duration, playing } = this.state;
     const src = `/api/track/audio/${id}`;
 
     return (
@@ -132,22 +152,30 @@ class AudioPlayer extends Component<IProps, IState> {
           }}
           src={src}
         />
-        <Slider
-          value={currentTime}
-          min={0}
-          max={duration}
-          valueLabelDisplay="auto"
-          valueLabelFormat={this.formatAudioTime}
-          onChange={this.handleSliderChange}
-        />
-        <Typography style={{textAlign: 'center'}} variant="caption">{this.formatAudioTime(currentTime) + ' / ' + this.formatAudioTime(duration)}</Typography>
-        <Controls
-          playing={playing}
-          currentTime={currentTime}
-          onPlay={this.handlePlay}
-          onStop={this.handleStop}
-        />
-        <CreateReaction id={id} time={currentTime} />
+        {
+          !isActive
+          ? <Button variant="contained" endIcon={<PlayArrow />} color="primary" onClick={this.setActive}>Play Track</Button>
+          : (
+            <React.Fragment>
+              <Slider
+                value={currentTime}
+                min={0}
+                max={duration}
+                valueLabelDisplay="auto"
+                valueLabelFormat={this.formatAudioTime}
+                onChange={this.handleSliderChange}
+              />
+              <Typography style={{textAlign: 'center'}} variant="caption">{this.formatAudioTime(currentTime) + ' / ' + this.formatAudioTime(duration)}</Typography>
+              <Controls
+                playing={playing}
+                currentTime={currentTime}
+                onPlay={this.handlePlay}
+                onStop={this.handleStop}
+              />
+              <CreateReaction id={id} time={currentTime} />
+            </React.Fragment>
+          )
+        }
       </React.Fragment>
     );
   }

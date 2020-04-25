@@ -25,10 +25,12 @@ import {
   CardContent,
   withStyles,
   createStyles,
-  Theme
+  Theme,
+  IconButton
 } from "@material-ui/core";
 import Delete from "./Delete";
 import AudioPlayer from "../audio/AudioPlayer";
+import { Edit } from "@material-ui/icons";
 
 type ITrack = {
   _id: string;
@@ -46,16 +48,8 @@ type IProps = {
   id: string;
   history: History;
   data?: any;
-  classes: {
-    actionButton: string;
-  }
 };
 
-const styles = ({ spacing }: Theme ) => createStyles ({
-  actionButton: {
-    margin: spacing(2)
-  }
-})
 
 class Show extends Component<IProps, IState> {
   constructor(props: Readonly<IProps>) {
@@ -112,7 +106,6 @@ class Show extends Component<IProps, IState> {
     }
 
     const { loading, track, error } = this.state;
-    const {classes} = this.props
 
     if (loading) return <Loading />;
     if (error !== "") return <Error message={error} />;
@@ -123,21 +116,19 @@ class Show extends Component<IProps, IState> {
           title={track.title}
           action={
             <span>
-              <Button
+              <IconButton
                 component={Link}
                 to={`/track/edit/${track._id}`}
-                variant="contained"
                 color="primary"
-                className={classes.actionButton}
               >
-                Edit
-              </Button>
-              <Delete id={track._id} actionButton={classes.actionButton} history={this.props.history} />
+                <Edit />
+              </IconButton>
+              <Delete id={track._id} history={this.props.history} />
             </span>
           }
         />
 
-        <CardContent>
+        <CardContent style={{textAlign: 'center'}}>
           {track._id !== "" && <AudioPlayer id={track._id} />}
         </CardContent>
       </Card>
@@ -145,4 +136,4 @@ class Show extends Component<IProps, IState> {
   }
 }
 
-export default withStyles(styles)(Show);
+export default Show;
