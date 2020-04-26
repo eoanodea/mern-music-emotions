@@ -182,12 +182,12 @@ export const remove = async (req: Request, res: Response) => {
      * used for GridFSBucket
      */
     const ObjId = new mongoose.Types.ObjectId(id);
-    
+
     /**
      * Remove any reactions associated with the track
      */
-    const reactions = await Reaction.deleteMany({track: ObjId})
-    
+    const reactions = await Reaction.deleteMany({ track: ObjId });
+
     /**
      * Remove the track object
      */
@@ -206,7 +206,7 @@ export const remove = async (req: Request, res: Response) => {
     bucket.delete(ObjId, function (err) {
       if (err) return res.status(400).json(handleError(err));
 
-      return res.status(200).json(handleSuccess({track, reactions}));
+      return res.status(200).json(handleSuccess({ track, reactions }));
     });
   } catch (err) {
     return res.status(400).json(handleError(err));
@@ -214,7 +214,7 @@ export const remove = async (req: Request, res: Response) => {
 };
 
 /**
- * Defines the Promise type return value for trackByID
+ * Type check for a Track
  */
 type ITrack = {
   _id: mongoose.Types.ObjectId;
@@ -249,14 +249,6 @@ export const trackByID = (req: Request) => {
 export const audio = (req: Request, res: Response) => {
   trackByID(req)
     .then((track) => {
-
-      /**
-       * Set the content type of that of the track data
-       * and the ranges to bytes
-       */
-      res.set("content-type", "audio/mp3");
-      res.set("Accept-Ranges", "bytes");
-
       /**
        * Define the GridFSBucket using the mongoose DB connection
        */
@@ -264,35 +256,62 @@ export const audio = (req: Request, res: Response) => {
         bucketName: "tracks",
       });
 
-      // let file = bucket.find({_id: track._id})
-      // console.log('finding file', file)
+      /**
+       * Find file meta data by it's ID
+       */
+      bucket.find(track._id).toArray((err, files) => {
+        if (err || !files || files.length === 0) {
+          console.log("error", err);
+          return res.status(404).json(handleError("File not found"))
+        } 
+        let file = files[0]
+        let options = undefined      
+
+      /**
+       * If the request headers include a range,
+       * partially load the bytes to the frontend
+       */
+      if(req.headers["range"]) {
+        let parts = req.headers["range"].replace(/bytes=/, "").split("-");
+        let partialstart = parts[0];
+        let partialend = parts[1];
+
+        let start = partialstart ? parseInt(partialstart, 10) : 0;
+        let end = partialend ? parseInt(partialend, 10) : file.length - 1;
+        let chunksize = (end - start) + 1;
+
+        /**
+         * Set patial response headers
+         */
+        res.writeHead(206, {
+          "Connection": "keep-alive",
+          "Accept-Ranges": "bytes",
+          "Content-Range": "bytes " + start + "-" + end + "/" + file.length,
+          "Content-Length": chunksize,
+          "Content-Type": "audio/mp3",
+        });
+
+        options = {
+          start, 
+          end
+        }
+
+      } else {
+        /**
+         * Set the response headers
+         */
+        res.writeHead(200, {
+          "Content-Length": file.length,
+          "Accept-Ranges": "bytes",
+          "Content-Type": "audio/mp3"
+        })
+      }
 
       /**
        * Open a download stream from GridFSBucket Object
-       * Using the track ID
+       * Using the track ID, and Pipe the response 
        */
-      let downloadStream = bucket.openDownloadStream(track._id);
-
-      /**
-       * Event listener to sending data chunks
-       */
-      downloadStream.on("data", (chunk) => {
-        res.write(chunk);
-      });
-
-      /**
-       * Event listener for an error
-       */
-      downloadStream.on("error", (err) => {
-        console.log("Download stream error", err);
-        res.sendStatus(404);
-      });
-
-      /**
-       * Event listener for when there is no more data to send
-       */
-      downloadStream.on("end", () => {
-        res.end();
+      bucket.openDownloadStream(track._id, options).pipe(res);
       });
     })
 

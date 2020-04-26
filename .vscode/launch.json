@@ -9,6 +9,7 @@
             "request": "launch",
             "name": "Launch via NPM",
             "runtimeExecutable": "npm",
+            "cwd": "${workspaceFolder}/server",
             "runtimeArgs": [
                 "run-script",
                 "debug"
@@ -19,6 +20,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
+            "cwd": "${workspaceFolder}",
             "program": "${workspaceFolder}/dist/server.generated.js"
         }
     ]
