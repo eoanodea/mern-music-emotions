@@ -39,7 +39,7 @@ import {
 } from "@material-ui/icons";
 import ReactionCard from "./ReactionCard";
 
-const styles = ({ spacing }: Theme) =>
+const styles = ({ breakpoints, spacing }: Theme) =>
   createStyles({
     input: {
       display: "none",
@@ -54,7 +54,9 @@ const styles = ({ spacing }: Theme) =>
       padding: spacing(4),
       textAlign: "center",
       margin: "0 auto",
-      maxWidth: "250px",
+      [breakpoints.down('xs')]: {
+        maxWidth: "100%"
+      }
     },
   });
 
@@ -184,7 +186,7 @@ class Create extends Component<IProps, IState> {
         <CardContent>
           <Grid container justify="space-evenly" spacing={3}>
             {reaction.emotion !== "" ? (
-              <Grid item xs={6} className={classes.selectedItem}>
+              <Grid item xs={10} sm={6} className={classes.selectedItem}>
                 <ReactionCard
                   reactionPaper={classes.reactionPaper}
                   onSelect={this.onSelectReaction}

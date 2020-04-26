@@ -14,9 +14,10 @@
 
 import React, { Component } from "react";
 import { Slider, Typography, Button } from "@material-ui/core";
+import {Alert} from "@material-ui/lab"
 import { Controls } from "./Controls";
 import CreateReaction from "../reaction/Create";
-import moment from 'moment'
+import moment from "moment";
 import { PlayArrow } from "@material-ui/icons";
 
 type IProps = {
@@ -46,7 +47,7 @@ class AudioPlayer extends Component<IProps, IState> {
       //@ts-ignore
       ios: process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent),
       //@ts-ignore
-      safari: /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification))
+      safari: /constructor/i.test(window.HTMLElement) || (function (p) {return p.toString() === "[object SafariRemoteNotification]";})(!window["safari"] ||(typeof safari !== "undefined" && safari.pushNotification)),
     };
 
     this.audioRef = React.createRef<HTMLAudioElement>();
@@ -59,28 +60,36 @@ class AudioPlayer extends Component<IProps, IState> {
    * when the component mounts
    */
   componentDidMount() {
-    console.log('safari!', this.state.safari)
-    console.log('ios!', this.state.ios)
-    if(this.state.ios || this.state.safari) {
-      this.setState({isActive: false})
+    console.log("safari!", this.state.safari);
+    console.log("ios!", this.state.ios);
+    if (this.state.ios || this.state.safari) {
+      this.setState({ isActive: false });
     } else this.initializeAudioPlayer();
   }
 
+  /**
+   * IOS & Safari only
+   * Manual load must be triggered 
+   * by the user in order to stream the audio
+   */
   setActive = () => {
-    this.setState({isActive: true})
-    this.initializeAudioPlayer();
-  }
+    if (this.audioRef) {
+      this.audioRef.load();
+      this.setState({ isActive: true });
+      this.initializeAudioPlayer();
+    }
+  };
 
   /**
    * Controls and listeners for the audio and range input
    */
   initializeAudioPlayer = () => {
-    console.log('running audio player!', this.audioRef)
+
     /**
      * Sync slider position with song current time
      */
     this.audioRef.onplay = () => {
-      console.log('playing!', this.audioRef.duration)
+      console.log("playing!", this.audioRef.duration, this.state.currentTime);
       this.setState({ playing: true, duration: this.audioRef.duration });
       this.currentTimeInterval = setInterval(() => {
         this.setState({ currentTime: this.audioRef.currentTime });
@@ -135,7 +144,7 @@ class AudioPlayer extends Component<IProps, IState> {
     }
   };
 
- formatAudioTime(seconds: number) { 
+  formatAudioTime(seconds: number) {
     return moment.utc(seconds * 1000).format("mm:ss");
   }
 
@@ -151,31 +160,52 @@ class AudioPlayer extends Component<IProps, IState> {
             this.audioRef = input;
           }}
           src={src}
+          controls={isActive && (this.state.ios || this.state.safari)}
         />
-        {
-          !isActive
-          ? <Button variant="contained" endIcon={<PlayArrow />} color="primary" onClick={this.setActive}>Play Track</Button>
-          : (
-            <React.Fragment>
-              <Slider
-                value={currentTime}
-                min={0}
-                max={duration}
-                valueLabelDisplay="auto"
-                valueLabelFormat={this.formatAudioTime}
-                onChange={this.handleSliderChange}
-              />
-              <Typography style={{textAlign: 'center'}} variant="caption">{this.formatAudioTime(currentTime) + ' / ' + this.formatAudioTime(duration)}</Typography>
-              <Controls
-                playing={playing}
-                currentTime={currentTime}
-                onPlay={this.handlePlay}
-                onStop={this.handleStop}
-              />
-              <CreateReaction id={id} time={currentTime} />
-            </React.Fragment>
-          )
-        }
+        {!isActive ? (
+          <Button
+            variant="contained"
+            endIcon={<PlayArrow />}
+            color="primary"
+            onClick={this.setActive}
+          >
+            Play Track
+          </Button>
+        ) : (
+          <React.Fragment>
+            {!this.state.ios && !this.state.safari ? (
+              <React.Fragment>
+                <Slider
+                  value={currentTime}
+                  min={0}
+                  max={duration}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={this.formatAudioTime}
+                  onChange={this.handleSliderChange}
+                />
+                <Typography style={{ textAlign: "center" }} variant="caption">
+                  {this.formatAudioTime(currentTime) +
+                    (typeof duration === "number"
+                      ? " / " + this.formatAudioTime(duration)
+                      : "")}
+                </Typography>
+                <Controls
+                  playing={playing}
+                  currentTime={currentTime}
+                  onPlay={this.handlePlay}
+                  onStop={this.handleStop}
+                />
+              </React.Fragment>
+            ) : (
+              <Alert severity="warning" style={{textAlign: 'left'}}>
+                Audio playback has not been optimized for {this.state.ios ? "iPhone" : "Safari"}
+                <br />For the best experience, open this application {this.state.ios ? "on a computer" : "on Google Chrome"}
+              </Alert>
+            )
+          }
+            <CreateReaction id={id} time={currentTime} />
+          </React.Fragment>
+        )}
       </React.Fragment>
     );
   }
