@@ -36,7 +36,6 @@ type IState = {
 class AudioPlayer extends Component<IProps, IState> {
   audioRef: any;
   currentTimeInterval: any;
-  sliderRef: any;
   constructor(props: Readonly<IProps>) {
     super(props);
     this.state = {
@@ -51,7 +50,6 @@ class AudioPlayer extends Component<IProps, IState> {
     };
 
     this.audioRef = React.createRef<HTMLAudioElement>();
-    this.sliderRef = React.createRef<HTMLInputElement>();
     this.currentTimeInterval = null;
   }
 
@@ -137,7 +135,7 @@ class AudioPlayer extends Component<IProps, IState> {
    * Stop the current audio file
    */
   handleStop = () => {
-    if (this.audioRef && this.sliderRef) {
+    if (this.audioRef) {
       this.audioRef.pause();
       this.audioRef.currentTime = 0;
       this.setState({ currentTime: 0 });

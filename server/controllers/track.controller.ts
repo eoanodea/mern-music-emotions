@@ -271,32 +271,35 @@ export const audio = (req: Request, res: Response) => {
        * If the request headers include a range,
        * partially load the bytes to the frontend
        */
-      if(req.headers["range"]) {
-        let parts = req.headers["range"].replace(/bytes=/, "").split("-");
-        let partialstart = parts[0];
-        let partialend = parts[1];
+      /**
+       * Commented out because it seems to break everything
+       */
+      // if(req.headers["range"]) {
+      //   let parts = req.headers["range"].replace(/bytes=/, "").split("-");
+      //   let partialstart = parts[0];
+      //   let partialend = parts[1];
 
-        let start = partialstart ? parseInt(partialstart, 10) : 0;
-        let end = partialend ? parseInt(partialend, 10) : file.length - 1;
-        let chunksize = (end - start) + 1;
+      //   let start = partialstart ? parseInt(partialstart, 10) : 0;
+      //   let end = partialend ? parseInt(partialend, 10) : file.length - 1;
+      //   let chunksize = (end - start) + 1;
 
-        /**
-         * Set patial response headers
-         */
-        res.writeHead(206, {
-          "Connection": "keep-alive",
-          "Accept-Ranges": "bytes",
-          "Content-Range": "bytes " + start + "-" + end + "/" + file.length,
-          "Content-Length": chunksize,
-          "Content-Type": "audio/mp3",
-        });
+      //   /**
+      //    * Set patial response headers
+      //    */
+      //   res.writeHead(206, {
+      //     "Connection": "keep-alive",
+      //     "Accept-Ranges": "bytes",
+      //     "Content-Range": "bytes " + start + "-" + end + "/" + file.length,
+      //     "Content-Length": file.length,
+      //     "Content-Type": "audio/mp3",
+      //   });
 
-        options = {
-          start, 
-          end
-        }
+      //   options = {
+      //     start, 
+      //     end
+      //   }
 
-      } else {
+      // } else {
         /**
          * Set the response headers
          */
@@ -305,7 +308,7 @@ export const audio = (req: Request, res: Response) => {
           "Accept-Ranges": "bytes",
           "Content-Type": "audio/mp3"
         })
-      }
+      // }
 
       /**
        * Open a download stream from GridFSBucket Object
