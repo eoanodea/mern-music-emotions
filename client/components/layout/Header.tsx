@@ -17,9 +17,7 @@ class Header extends Component {
     return (
       <AppBar position="static">
         <Toolbar style={{justifyContent: 'space-between'}}>
-          <Link to="/">
-            <Typography variant="h6">Emotune</Typography>
-          </Link>
+          <Button component={Link} to="/">Emotune</Button>
 
           <div>
             <Button component={Link} to="/">Home</Button>
