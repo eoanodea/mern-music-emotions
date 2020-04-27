@@ -25,6 +25,11 @@ let theme = createMuiTheme({
                 margin: '0 auto',
                 display: 'flex'
             }
+        },
+        MuiTabs: {
+            flexContainer: {
+                justifyContent: 'center'
+            }
         }
     }
 })

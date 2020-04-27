@@ -19,18 +19,14 @@ import Loading from "../global/Loading";
 import { Link } from "react-router-dom";
 import { History } from "history";
 import {
-  Button,
   Card,
   CardHeader,
   CardContent,
-  withStyles,
-  createStyles,
-  Theme,
   IconButton
 } from "@material-ui/core";
 import Delete from "./Delete";
 import AudioPlayer from "../audio/AudioPlayer";
-import { Edit } from "@material-ui/icons";
+import { Edit, ArrowLeft, ArrowBack } from "@material-ui/icons";
 
 type ITrack = {
   _id: string;
@@ -112,6 +108,7 @@ class Show extends Component<IProps, IState> {
 
     return (
       <Card>
+        <IconButton component={Link} to={`/tracks`}><ArrowBack /></IconButton>
         <CardHeader
           title={track.title}
           action={

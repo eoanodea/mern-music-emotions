@@ -13,12 +13,16 @@
  */
 
 import React, { Component } from "react";
-import { Slider, Typography, Button } from "@material-ui/core";
-import {Alert} from "@material-ui/lab"
+import {
+  Slider,
+  Typography,
+  Button
+} from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 import { Controls } from "./Controls";
-import CreateReaction from "../reaction/Create";
 import moment from "moment";
 import { PlayArrow } from "@material-ui/icons";
+import TabController from "../tabs/TabController";
 
 type IProps = {
   id: string;
@@ -29,6 +33,7 @@ type IState = {
   currentTime: number;
   playing: boolean;
   isActive: boolean;
+  tab: number;
   ios: boolean;
   safari: boolean;
 };
@@ -43,10 +48,11 @@ class AudioPlayer extends Component<IProps, IState> {
       currentTime: 0,
       playing: false,
       isActive: true,
+      tab: 0,
       //@ts-ignore
       ios: process.browser && /iPad|iPhone|iPod/.test(navigator.userAgent),
       //@ts-ignore
-      safari: /constructor/i.test(window.HTMLElement) || (function (p) {return p.toString() === "[object SafariRemoteNotification]";})(!window["safari"] ||(typeof safari !== "undefined" && safari.pushNotification)),
+      safari: /constructor/i.test(window.HTMLElement) ||(function (p) {return p.toString() === "[object SafariRemoteNotification]";})(!window["safari"] ||(typeof safari !== "undefined" && safari.pushNotification)),
     };
 
     this.audioRef = React.createRef<HTMLAudioElement>();
@@ -58,16 +64,19 @@ class AudioPlayer extends Component<IProps, IState> {
    * when the component mounts
    */
   componentDidMount() {
-    console.log("safari!", this.state.safari);
-    console.log("ios!", this.state.ios);
     if (this.state.ios || this.state.safari) {
       this.setState({ isActive: false });
     } else this.initializeAudioPlayer();
   }
 
+  componentWillUnmount = () => {
+    !this.audioRef.paused && this.audioRef.pause()
+    this.audioRef = null
+  }
+
   /**
    * IOS & Safari only
-   * Manual load must be triggered 
+   * Manual load must be triggered
    * by the user in order to stream the audio
    */
   setActive = () => {
@@ -82,12 +91,10 @@ class AudioPlayer extends Component<IProps, IState> {
    * Controls and listeners for the audio and range input
    */
   initializeAudioPlayer = () => {
-
     /**
      * Sync slider position with song current time
      */
     this.audioRef.onplay = () => {
-      console.log("playing!", this.audioRef.duration, this.state.currentTime);
       this.setState({ playing: true, duration: this.audioRef.duration });
       this.currentTimeInterval = setInterval(() => {
         this.setState({ currentTime: this.audioRef.currentTime });
@@ -107,7 +114,6 @@ class AudioPlayer extends Component<IProps, IState> {
      * Get duration of the audio and set it as max slider value
      */
     this.audioRef.ondurationchange = () => {
-      console.log("duration change!", this.audioRef.duration);
       this.setState({ duration: this.audioRef.duration });
     };
   };
@@ -142,8 +148,29 @@ class AudioPlayer extends Component<IProps, IState> {
     }
   };
 
+  /**
+   * Handles the formatting of seconds into a readable format
+   * 
+   * @param {number} seconds 
+   */
   formatAudioTime(seconds: number) {
     return moment.utc(seconds * 1000).format("mm:ss");
+  }
+
+  /**
+   * Handles jumping to a certain point in the audio from
+   * clicking a reaction time
+   * 
+   * @param {number} seconds
+   */
+  handleAudioTimeJump = (seconds: number) => {
+    if (this.audioRef) {
+      !this.audioRef.paused && this.audioRef.pause();
+      this.audioRef.currentTime = seconds;
+      this.setState({ currentTime: seconds });
+      window.scrollTo(0, 0);
+      this.audioRef.play();
+    }
   }
 
   render() {
@@ -195,13 +222,15 @@ class AudioPlayer extends Component<IProps, IState> {
                 />
               </React.Fragment>
             ) : (
-              <Alert severity="warning" style={{textAlign: 'left'}}>
-                Audio playback has not been optimized for {this.state.ios ? "iPhone" : "Safari"}
-                <br />For the best experience, open this application {this.state.ios ? "on a computer" : "on Google Chrome"}
+              <Alert severity="warning" style={{ textAlign: "left" }}>
+                Audio playback has not been optimized for{" "}
+                {this.state.ios ? "iPhone" : "Safari"}
+                <br />
+                For the best experience, open this application{" "}
+                {this.state.ios ? "on a computer" : "on Google Chrome"}
               </Alert>
-            )
-          }
-            <CreateReaction id={id} time={currentTime} />
+            )}
+            <TabController id={id} currentTime={currentTime} handleAudioJump={this.handleAudioTimeJump} />
           </React.Fragment>
         )}
       </React.Fragment>

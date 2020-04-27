@@ -36,6 +36,7 @@ import {
   SentimentVeryDissatisfied,
   SentimentDissatisfied,
   CheckCircle,
+  Error,
 } from "@material-ui/icons";
 import ReactionCard from "./ReactionCard";
 
@@ -222,10 +223,8 @@ class Create extends Component<IProps, IState> {
 
           <br />
           {error !== "" && (
-            <Typography component="p" color="error">
-              <Icon color="error" className={classes.error}>
-                error
-              </Icon>
+            <Typography component="p" color="error" style={{textAlign: 'center'}}>
+              <Error color="error" className={classes.error} />
               {error}
             </Typography>
           )}

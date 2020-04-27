@@ -53,7 +53,8 @@ export const create = async (req: Request, res: Response) => {
  */
 export const list = async (req: Request, res: Response) => {
   try {
-    const reactions = await Reaction.find({});
+    const {trackId} = req.params
+    const reactions = await Reaction.find({track: trackId});
 
     return res.status(200).json(handleSuccess(reactions));
   } catch (err) {

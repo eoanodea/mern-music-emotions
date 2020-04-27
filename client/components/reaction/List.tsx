@@ -17,12 +17,27 @@ import { list } from "./api-reaction";
 import Error from "../global/Error";
 import Loading from "../global/Loading";
 import { Link } from "react-router-dom";
-import { Button, Card, CardActions, Typography, CardActionArea } from "@material-ui/core";
+import moment from "moment";
+import {
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Grow,
+  ListSubheader,
+} from "@material-ui/core";
+import MuiList from "@material-ui/core/List";
+import { SentimentVerySatisfied, SentimentDissatisfied, SentimentVeryDissatisfiedOutlined, SentimentVeryDissatisfied } from "@material-ui/icons";
 
 type IReaction = {
     _id: string
-    title: string,
-    data: Buffer
+    time: number,
+    emotion: string,
+    created: Date
+}
+
+type IProp = {
+  id: string
+  handleAudioJump: (seconds: number) => void;
 }
 
 type IState = {
@@ -31,7 +46,7 @@ type IState = {
   error: string;
 };
 
-class List extends Component<IState> {
+class List extends Component<IProp, IState> {
   state: { reactions: IReaction[], loading: boolean, error: string } = {
     reactions: [],
     loading: true,
@@ -46,11 +61,33 @@ class List extends Component<IState> {
    * Run the fetch reactions function
    */
   init = () => {
-    list().then((data) => {
+    const {id} = this.props
+    list(id).then((data) => {
       if (data.error) this.setState({ loading: false, error: data.error });
       else this.setState({ loading: false, reactions: data.data });
     });
   };
+
+  displayReactionIcon = (reaction:string) => {
+    switch(reaction) {
+      case "Happy":
+        return <SentimentVerySatisfied color="secondary" />
+      case "Sad":
+        return <SentimentVeryDissatisfied color="secondary" />
+      case "Fear":
+        return <SentimentVeryDissatisfiedOutlined color="secondary" />
+      default:
+        return <SentimentDissatisfied color="secondary" />
+    }
+  }
+
+  formatAudioTime(seconds: number) {
+    return moment.utc(seconds * 1000).format("mm:ss");
+  }
+
+  handleClickSeek = (time: any) => (event:any) => {
+    this.props.handleAudioJump(time)
+  }
 
   render() {
     const { loading, reactions, error } = this.state;
@@ -59,28 +96,34 @@ class List extends Component<IState> {
     if (error !== "") return <Error message={error} />;
 
     return (
-      <div>
-        <h2>List Reactions</h2>
-        <Button 
-            component={Link} 
-            to="/reaction/new"
-            variant="contained"
-            color="primary"
-        >Add Reaction</Button>
-        <br />
-        {reactions.map((dat, i) => {
-            return (
-                <Card key={i}>
-                    <Link to={`/reaction/show/${dat._id}`}>
-                    <CardActionArea>
-                        <Typography variant="h5">{dat.title}</Typography>
-                    </CardActionArea>
-
-                    </Link>
-                </Card>
-            )
-        })}
-      </div>
+      <span>
+        <MuiList>
+          <ListSubheader style={{textAlign: 'left'}}>
+            Reactions
+          </ListSubheader>
+          {reactions.length > 0 ? (
+            reactions.map((dat, i) => {
+              return (
+                <Grow in={true} timeout={500 * i} key={i}>
+                  <ListItem
+                    button
+                    onClick={this.handleClickSeek(dat.time)}
+                  >
+                    <ListItemIcon>
+                      {this.displayReactionIcon(dat.emotion)}
+                    </ListItemIcon>
+                    <ListItemText primary={this.formatAudioTime(dat.time) + " - " + dat.emotion} secondary={moment(dat.created).format("dddd, MMMM Do YYYY, h:mm:ss a")} />
+                  </ListItem>
+                </Grow>
+              );
+            })
+          ) : (
+            <ListItem>
+              <ListItemText primary="No reactions have been made"/>
+            </ListItem>
+          )}
+        </MuiList>
+      </span>
     );
   }
 }

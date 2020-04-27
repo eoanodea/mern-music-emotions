@@ -12,7 +12,7 @@
  * Copyright 2020 - WebSpace
  */
 
-import config from "../../../config/config"
+// import config from "../../../config/config"
 const prefix = "/api/track"
 
 
