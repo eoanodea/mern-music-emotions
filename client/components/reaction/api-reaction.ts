@@ -41,9 +41,9 @@ export const create  = async (body: any) => {
 /**
  * List all reactions from the server
  */
-export const list  = async () => {
+export const list  = async (id: string) => {
     try {
-        const response = await fetch(`${prefix}`, {
+        const response = await fetch(`${prefix}/${id}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

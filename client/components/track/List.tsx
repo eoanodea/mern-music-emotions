@@ -17,10 +17,9 @@ import { list } from "./api-track";
 import Error from "../global/Error";
 import Loading from "../global/Loading";
 import { Link } from "react-router-dom";
+import moment from "moment";
 import {
   Button,
-  Typography,
-  ListSubheader,
   ListItem,
   ListItemText,
   ListItemIcon,
@@ -97,7 +96,7 @@ class List extends Component<IState> {
                   <ListItemIcon>
                     <Audiotrack />
                   </ListItemIcon>
-                  <ListItemText primary={dat.title} secondary={dat.created} />
+                  <ListItemText primary={dat.title} secondary={moment(dat.created).format("dddd, MMMM Do YYYY, h:mm:ss a")} />
                 </ListItem>
               );
             })

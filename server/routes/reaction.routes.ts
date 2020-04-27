@@ -22,9 +22,9 @@ const prefix = "/api/reaction"
 
 /**
  * @method POST - Create a new reaction
- * @method GET - List all reactions
+ * @method GET - List all reactions by a track
  */
-router.route(`${prefix}`)
+router.route(`${prefix}/:trackId?`)
     .post(reactionCtrl.create)
     .get(reactionCtrl.list)
 

@@ -34,7 +34,7 @@ class Home extends Component<IProps> {
         <Typography variant="h4">
           <Audiotrack fontSize="large" color="primary" />
         </Typography>
-        <Typography variant="h3">Emotune</Typography>
+        <Typography variant="h3">Welcome to Emotune</Typography>
         <br />
         <Button color="secondary" variant="contained" endIcon={<ArrowRight />} component={Link} to="/tracks">Get Started</Button>   
       </Paper>
