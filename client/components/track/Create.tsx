@@ -31,7 +31,7 @@ import {
   FormHelperText,
   Grow,
 } from "@material-ui/core";
-import { Audiotrack } from "@material-ui/icons";
+import { Audiotrack, Error } from "@material-ui/icons";
 
 const styles = ({ spacing }: Theme) =>
   createStyles({
@@ -40,6 +40,7 @@ const styles = ({ spacing }: Theme) =>
     },
     error: {
       verticalAlign: "middle",
+      textAlign: 'center'
     },
     inputContainer: {
       display: "flex",
@@ -166,10 +167,8 @@ class Create extends Component<IProps, IState> {
           </form>
           <br />
           {this.state.error !== "" && (
-            <Typography component="p" color="error">
-              <Icon color="error" className={classes.error}>
-                error
-              </Icon>
+            <Typography component="p" color="error" style={{textAlign: 'center'}}>
+              <Error color="error" className={classes.error} />
               {this.state.error}
             </Typography>
           )}
