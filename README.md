@@ -7,7 +7,7 @@ An application which is capable of uploading and streaming audio files, which a 
 The application is a server side rendered MERN (MongoDB, Express.js, React.js Node.js) application written in TypeScript.
 
 ### Demo
-A live demo of the application can be found here - http://music-app.wspace.ie/
+A live demo of the application can be found here - https://mern-music-app.herokuapp.com/
 
 
 #### What you need to run this code
